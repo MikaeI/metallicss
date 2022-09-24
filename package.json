@@ -1,0 +1,23 @@
+{
+  "name": "metallicss",
+  "version": "1.0.1",
+  "description": "Versatile metallic finish for CSS",
+  "main": "metallicss.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MikaeI/metallicss.git"
+  },
+  "keywords": [],
+  "author": "MikaeI",
+  "license": "SEE LICENSE IN LICENSE",
+  "bugs": {
+    "url": "https://github.com/MikaeI/metallicss/issues"
+  },
+  "homepage": "https://github.com/MikaeI/metallicss#readme"
+}
