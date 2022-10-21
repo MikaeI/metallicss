@@ -1,6 +1,6 @@
 {
   "name": "metallicss",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Versatile metallic finish for CSS",
   "main": "metallicss.js",
   "directories": {
