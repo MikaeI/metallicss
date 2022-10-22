@@ -1,12 +1,30 @@
-const base = tag("rect", {
-    props: {
-      fill: "url(#gradient)",
-      height: 2048,
-      width: 2048,
-      x: -512,
-      y: -512,
-    },
-  }),
+const base = [
+    tag("rect", {
+      props: {
+        fill: "url(#gradient)",
+        height: 2048,
+        width: 2048,
+        x: -512,
+        y: -512,
+      },
+    }),
+    tag("rect", {
+      props: {
+        filter: "url(#texture)",
+        height: 1024,
+        width: 1024,
+        style: "mix-blend-mode: luminosity; opacity: 0.5",
+      },
+    }),
+    tag("rect", {
+      props: {
+        filter: "url(#texture)",
+        height: 1024,
+        width: 1024,
+        style: "mix-blend-mode: screen; opacity: 0.25",
+      },
+    }),
+  ],
   defs = tag("defs", {
     inner: [
       tag("linearGradient", {
@@ -22,26 +40,26 @@ const base = tag("rect", {
         ],
         props: { id: "gradient", x1: 0, x2: 0, y1: 0, y2: 1 },
       }),
-    ],
-  }),
-  radial = tag("radialGradient", {
-    inner: [
-      tag("stop", {
-        props: {
-          offset: "75%",
-          ["stop-color"]: "#000000",
-          ["stop-opacity"]: 0,
-        },
+      tag("radialGradient", {
+        inner: [
+          tag("stop", {
+            props: {
+              offset: "25%",
+              ["stop-color"]: "#808080",
+              ["stop-opacity"]: 1,
+            },
+          }),
+          tag("stop", {
+            props: {
+              offset: "50%",
+              ["stop-color"]: "#808080",
+              ["stop-opacity"]: 0,
+            },
+          }),
+        ],
+        props: { id: "radial" },
       }),
-      tag("stop", {
-        props: {
-          offset: "150%",
-          ["stop-color"]: "#000000",
-          ["stop-opacity"]: 1,
-        },
-      }),
     ],
-    props: { id: "radial" },
   }),
   serializer = new XMLSerializer(),
   xmlns = "http://www.w3.org/2000/svg";
@@ -85,7 +103,7 @@ export const metallicss = (elem, id, value) => {
         depthValue === "0%" || depthValue === " 0%"
           ? 0
           : (depthValue && parseInt(depthValue)) || 20,
-      depth = rawDepth * ((height > width ? width : height) / 320),
+      depth = rawDepth * ((height > width ? width : height) / 640),
       absDepth = Math.abs(depth),
       x = width / (64 * (absDepth / 10 + 1)),
       y = height / (64 * (absDepth / 10 + 1)),
@@ -133,114 +151,29 @@ export const metallicss = (elem, id, value) => {
                       ["shape-rendering"]: "optimizeSpeed",
                     },
                     inner: [
-                      tag("defs", {
-                        inner: [
-                          radial,
-                          tag("filter", {
-                            inner: [
-                              tag("feImage", {
-                                props: {
-                                  href: `data:image/svg+xml;utf8,${encodeURIComponent(
-                                    serializer.serializeToString(
-                                      tag("svg", {
-                                        props: {
-                                          height: "1024",
-                                          width: "1024",
-                                          xmlns,
-                                          ["text-rendering"]: "optimizeSpeed",
-                                          ["shape-rendering"]: "optimizeSpeed",
-                                        },
-                                        inner: [
-                                          tag("rect", {
-                                            props: {
-                                              fill: "white",
-                                              height: "1024",
-                                              width: "1024",
-                                            },
-                                          }),
-                                          ...Array.from({ length: 24 })
-                                            .map((_, index) =>
-                                              sheen({
-                                                offset: Math.pow(
-                                                  3,
-                                                  index % 2 === 0
-                                                    ? index / 4
-                                                    : (index - 1) / 4
-                                                ),
-                                                radii,
-                                                stroke:
-                                                  Math.ceil(index / 2) % 2 === 0
-                                                    ? "red"
-                                                    : "white",
-                                                vertical: index % 2 === 0,
-                                                x,
-                                                y,
-                                              })
-                                            )
-                                            .reverse(),
-                                        ],
-                                      })
-                                    )
-                                  )}`,
-                                  result: "image",
-                                },
-                              }),
-                              tag("feGaussianBlur", {
-                                props: {
-                                  ["color-interpolation-filters"]: "sRGB",
-                                  in: "image",
-                                  result: "blur1",
-                                  stdDeviation: `${8 * (y / x)},${8 * (x / y)}`,
-                                },
-                              }),
-                              tag("feComposite", {
-                                props: {
-                                  in: "blur1",
-                                  in2: "SourceGraphic",
-                                  operator: "in",
-                                  result: "edges",
-                                },
-                              }),
-                              tag("feGaussianBlur", {
-                                props: {
-                                  ["color-interpolation-filters"]: "sRGB",
-                                  in: "image",
-                                  stdDeviation: `${128 * (y / x)},${
-                                    128 * (x / y)
-                                  }`,
-                                  result: "blur2",
-                                },
-                              }),
-                              tag("feComposite", {
-                                props: { in: "blur2", operator: "in" },
-                              }),
-                              tag("feComposite", {
-                                props: { in: "edges", operator: "over" },
-                              }),
-                            ],
-                            props: {
-                              id: "blur",
-                              filterUnits: "userSpaceOnUse",
-                              height: "1024",
-                              width: "1024",
-                              x: "0",
-                              y: "0",
-                            },
-                          }),
-                        ],
+                      tag("rect", {
+                        props: {
+                          fill: "white",
+                          height: "1024",
+                          width: "1024",
+                        },
                       }),
-                      tag("g", {
-                        inner: [
-                          tag("rect", {
-                            props: {
-                              fill: "url(#radial)",
-                              height: "1024",
-                              width: "1024",
-                            },
-                          }),
-                        ],
-                        props: { filter: "url(#blur)" },
-                      }),
+                      ...Array.from({ length: 24 })
+                        .map((_, index) =>
+                          sheen({
+                            offset: Math.pow(
+                              3,
+                              index % 2 === 0 ? index / 4 : (index - 1) / 4
+                            ),
+                            radii,
+                            stroke:
+                              Math.ceil(index / 2) % 2 === 0 ? "red" : "white",
+                            vertical: index % 2 === 0,
+                            x,
+                            y,
+                          })
+                        )
+                        .reverse(),
                     ],
                   })
                 )
@@ -248,21 +181,56 @@ export const metallicss = (elem, id, value) => {
               result: "image",
             },
           }),
+          tag("feGaussianBlur", {
+            props: {
+              ["color-interpolation-filters"]: "sRGB",
+              in: "image",
+              result: "blur",
+              stdDeviation: `${8 * (y / x)},${12 * (x / y)}`,
+            },
+          }),
           tag("feDisplacementMap", {
             props: {
               ["color-interpolation-filters"]: "sRGB",
               in: "SourceGraphic",
-              in2: "image",
+              in2: "blur",
               result: "displacement",
-              scale: 100,
+              scale: 200,
               xChannelSelector: "R",
               yChannelSelector: "G",
             },
           }),
         ],
       }),
+      tag("filter", {
+        props: {
+          height: "1024",
+          id: "texture",
+          width: "1024",
+          x: "0",
+          y: "0",
+        },
+        inner: [
+          tag("feTurbulence", {
+            props: {
+              ["color-interpolation-filters"]: "sRGB",
+              baseFrequency: 0.005,
+              result: "turbulence",
+              type: "fractalNoise",
+              seed: 23,
+            },
+          }),
+          tag("feDisplacementMap", {
+            props: {
+              ["color-interpolation-filters"]: "sRGB",
+              in: "BackgroundImage",
+              in2: "turbulence",
+            },
+          }),
+        ],
+      }),
       defs,
-      tag("g", { inner: [base], props: { filter: "url(#noise)" } }),
+      tag("g", { inner: base, props: { filter: "url(#noise)" } }),
       inverse &&
         tag("rect", {
           props: {
@@ -278,7 +246,7 @@ export const metallicss = (elem, id, value) => {
         props: {
           fill,
           height: 1024,
-          opacity: 0.75,
+          opacity: 0.5,
           style: "mix-blend-mode: overlay",
           width: 1024,
           x: 0,
