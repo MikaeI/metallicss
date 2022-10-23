@@ -99,12 +99,13 @@ export const metallicss = (elem, id, value) => {
     const { offsetWidth: width, offsetHeight: height } = elem,
       { backgroundColor: background, borderRadius } = getComputedStyle(elem),
       depthValue = getComputedStyle(elem).getPropertyValue("--convexity"),
+      seed = getComputedStyle(elem).getPropertyValue("--seed") || 23,
       metal = getComputedStyle(elem).getPropertyValue("--metal"),
       lustre = `filter: ${
         {
           copper:
             "brightness(0.85) sepia(0.5) saturate(2) hue-rotate(-33.75deg)",
-          gold: "sepia(0.75) saturate(1.75)",
+          gold: "sepia(1) saturate(1.75)",
           iron: "",
           silver: "brightness(1.125)",
         }[metal || "iron"]
@@ -227,7 +228,7 @@ export const metallicss = (elem, id, value) => {
               baseFrequency: 0.005,
               result: "turbulence",
               type: "fractalNoise",
-              seed: 23,
+              seed,
             },
           }),
           tag("feDisplacementMap", {
