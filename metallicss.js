@@ -103,11 +103,11 @@ export const metallicss = (elem, id, value) => {
       lustre = `filter: ${
         {
           copper:
-            "brightness(0.85) sepia(0.5) saturate(2) hue-rotate(-33.75deg) drop-shadow(#884303 0px 0px 0.5px)",
-          gold: "sepia(0.5) saturate(1.75) drop-shadow(#885600 0px 0px 0.5px)",
-          iron: "drop-shadow(#120e12 0px 0px 0.5px)",
-          silver: "drop-shadow(#120e12 0px 0px 0.5px)",
-        }[metal]
+            "brightness(0.85) sepia(0.5) saturate(2) hue-rotate(-33.75deg)",
+          gold: "sepia(0.75) saturate(1.75)",
+          iron: "",
+          silver: "brightness(1.125)",
+        }[metal || "iron"]
       }`,
       rawDepth =
         depthValue === "0%" || depthValue === " 0%"
