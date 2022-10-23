@@ -287,9 +287,11 @@ export const metallicss = (elem, id, value) => {
     elem.style.transform = "translateZ(0)";
     elem.style.transition = "none";
     if (elem.querySelector("span")) {
-      elem.querySelector("span").style.color = inverse ? "#404040" : "#c0c0c0";
+      elem.querySelector("span").style.color = inverse
+        ? "#000000ab"
+        : "#ffffffab";
       elem.querySelector("span").style.display = "inline-block";
-      elem.querySelector("span").style.mixBlendMode = "hard-light";
+      elem.querySelector("span").style.mixBlendMode = "luminosity";
       elem.querySelector("span").style.textShadow = inverse
         ? "white .5px .5px 1px"
         : "black -.5px -.5px 1px";
