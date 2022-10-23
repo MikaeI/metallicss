@@ -99,6 +99,16 @@ export const metallicss = (elem, id, value) => {
     const { offsetWidth: width, offsetHeight: height } = elem,
       { backgroundColor: background, borderRadius } = getComputedStyle(elem),
       depthValue = getComputedStyle(elem).getPropertyValue("--convexity"),
+      metal = getComputedStyle(elem).getPropertyValue("--metal"),
+      lustre = `filter: ${
+        {
+          copper:
+            "brightness(0.85) sepia(0.5) saturate(2) hue-rotate(-33.75deg) drop-shadow(#884303 0px 0px 0.5px)",
+          gold: "sepia(0.5) saturate(1.75) drop-shadow(#885600 0px 0px 0.5px)",
+          iron: "drop-shadow(#120e12 0px 0px 0.5px)",
+          silver: "drop-shadow(#120e12 0px 0px 0.5px)",
+        }[metal]
+      }`,
       rawDepth =
         depthValue === "0%" || depthValue === " 0%"
           ? 0
@@ -147,8 +157,8 @@ export const metallicss = (elem, id, value) => {
                       height: "1024",
                       width: "1024",
                       xmlns,
-                      ["text-rendering"]: "optimizeSpeed",
-                      ["shape-rendering"]: "optimizeSpeed",
+                      // ["text-rendering"]: "optimizeSpeed",
+                      // ["shape-rendering"]: "optimizeSpeed",
                     },
                     inner: [
                       tag("rect", {
@@ -260,11 +270,11 @@ export const metallicss = (elem, id, value) => {
           inner: content,
           props: {
             preserveAspectRatio: "none",
-            style: `transform: scale(1, ${inverse ? "-" : ""}1)`,
+            style: `transform: scale(1, ${inverse ? "-" : ""}1); ${lustre}`,
             viewBox: "0 0 1024 1024",
             xmlns,
-            ["text-rendering"]: "optimizeSpeed",
-            ["shape-rendering"]: "optimizeSpeed",
+            // ["text-rendering"]: "optimizeSpeed",
+            // ["shape-rendering"]: "optimizeSpeed",
           },
         })
       )
