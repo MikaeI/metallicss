@@ -11,17 +11,21 @@ const base = [
     tag("rect", {
       props: {
         filter: "url(#texture)",
-        height: 1024,
+        height: 2048,
         style: "mix-blend-mode: luminosity; opacity: 0.5",
-        width: 1024,
+        width: 2048,
+        x: -512,
+        y: -512,
       },
     }),
     tag("rect", {
       props: {
         filter: "url(#texture)",
-        height: 1024,
+        height: 2048,
         style: "mix-blend-mode: screen; opacity: 0.25",
-        width: 1024,
+        width: 2048,
+        x: -512,
+        y: -512,
       },
     }),
   ],
@@ -105,7 +109,7 @@ export const metallicss = (elem, id, value) => {
         {
           copper:
             "brightness(0.85) sepia(0.5) saturate(2) hue-rotate(-33.75deg)",
-          gold: "sepia(1) saturate(1.75)",
+          gold: "brightness(0.95) sepia(1) saturate(1.5)",
           iron: "",
           silver: "brightness(1.125)",
         }[metal || "iron"]
@@ -137,13 +141,13 @@ export const metallicss = (elem, id, value) => {
                     href: `data:image/svg+xml;utf8,${encodeURIComponent(
                       serializer.serializeToString(
                         tag("svg", {
-                          props: { height: "1024", width: "1024", xmlns },
+                          props: { height: 1024, width: 1024, xmlns },
                           inner: [
                             tag("rect", {
                               props: {
                                 fill: "white",
-                                height: "1024",
-                                width: "1024",
+                                height: 1024,
+                                width: 1024,
                               },
                             }),
                             ...Array.from({ length: 24 })
@@ -195,11 +199,11 @@ export const metallicss = (elem, id, value) => {
               ],
               props: {
                 filterUnits: "userSpaceOnUse",
-                height: "1024",
+                height: 1024,
                 id: "noise",
-                width: "1024",
-                x: "0",
-                y: "0",
+                width: 1024,
+                x: 0,
+                y: 0,
               },
             }),
             tag("filter", {
@@ -222,11 +226,11 @@ export const metallicss = (elem, id, value) => {
                 }),
               ],
               props: {
-                height: "1024",
+                height: 1024,
                 id: "texture",
-                width: "1024",
-                x: "0",
-                y: "0",
+                width: 1024,
+                x: 0,
+                y: 0,
               },
             }),
             defs,
@@ -265,18 +269,16 @@ export const metallicss = (elem, id, value) => {
     )}')`;
     elem.style.backgroundSize = "100% 100%";
     elem.style.border = "none";
-    !inverse &&
-      (elem.style.boxShadow = "#00000030 1px 2px 2px, #00000020 2px 4px 4px");
+    elem.style.boxShadow = inverse
+      ? "none"
+      : "#00000030 1px 2px 2px, #00000020 2px 4px 4px";
+    elem.style.color = `#${inverse ? "000000" : "ffffff"}e0`;
     elem.style.textRendering = "geometricPrecision";
-    elem.style.transform = "translateZ(0)";
-    elem.style.transition = "none";
-    elem.innerText.style.color = `#${inverse ? "000000" : "ffffff"}80`;
-    elem.innerText.style.display = "inline-block";
-    elem.innerText.style.mixBlendMode = inverse ? "overlay" : "luminosity";
-    elem.innerText.style.transform = `scale(${1 + (depth || 0) / 5000})`;
-    elem.innerText.style.textShadow = inverse
+    elem.style.textShadow = inverse
       ? "white .5px .5px 1px"
       : "black -.5px -.5px 1px";
+    elem.style.transform = "translateZ(0)";
+    elem.style.transition = "none";
   },
   traverse = () => document.querySelectorAll(".metallicss").forEach(metallicss);
 
