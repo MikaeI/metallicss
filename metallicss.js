@@ -12,16 +12,16 @@ const base = [
       props: {
         filter: "url(#texture)",
         height: 1024,
-        width: 1024,
         style: "mix-blend-mode: luminosity; opacity: 0.5",
+        width: 1024,
       },
     }),
     tag("rect", {
       props: {
         filter: "url(#texture)",
         height: 1024,
-        width: 1024,
         style: "mix-blend-mode: screen; opacity: 0.25",
+        width: 1024,
       },
     }),
   ],
@@ -44,16 +44,16 @@ const base = [
         inner: [
           tag("stop", {
             props: {
-              offset: "25%",
               ["stop-color"]: "#808080",
               ["stop-opacity"]: 1,
+              offset: "25%",
             },
           }),
           tag("stop", {
             props: {
-              offset: "50%",
               ["stop-color"]: "#808080",
               ["stop-opacity"]: 0,
+              offset: "50%",
             },
           }),
         ],
@@ -124,178 +124,159 @@ export const metallicss = (elem, id, value) => {
         y: width / 2 < radius ? 512 * (x / y) : radius * (1024 / height),
       },
       inverse = depth < 0,
-      parent = elem.parentElement,
       fill = background === "rgba(0, 0, 0, 0)" ? "gray" : background;
-    let content;
 
-    (parent.className.indexOf("metallicss") === -1 ||
-      getComputedStyle(parent).getPropertyValue("--convexity").indexOf("-") !==
-        -1) &&
-      (elem.style.boxShadow = inverse
-        ? "none"
-        : "#00000030 1px 2px 2px, #00000020 2px 4px 4px");
-    if (elem.firstChild !== null && elem.firstChild.style) {
-      elem.firstChild.style.display = "inline-block";
-      elem.firstChild.style.transform = `scale(${1 + (depth || 0) / 5000})`;
-    }
-    content = [
-      tag("filter", {
-        props: {
-          filterUnits: "userSpaceOnUse",
-          height: "1024",
-          id: "noise",
-          width: "1024",
-          x: "0",
-          y: "0",
-        },
-        inner: [
-          tag("feImage", {
-            props: {
-              href: `data:image/svg+xml;utf8,${encodeURIComponent(
-                serializer.serializeToString(
-                  tag("svg", {
-                    props: {
-                      height: "1024",
-                      width: "1024",
-                      xmlns,
-                      // ["text-rendering"]: "optimizeSpeed",
-                      // ["shape-rendering"]: "optimizeSpeed",
-                    },
-                    inner: [
-                      tag("rect", {
-                        props: {
-                          fill: "white",
-                          height: "1024",
-                          width: "1024",
-                        },
-                      }),
-                      ...Array.from({ length: 24 })
-                        .map((_, index) =>
-                          sheen({
-                            offset: Math.pow(
-                              3,
-                              index % 2 === 0 ? index / 4 : (index - 1) / 4
-                            ),
-                            radii,
-                            stroke:
-                              Math.ceil(index / 2) % 2 === 0 ? "red" : "white",
-                            vertical: index % 2 === 0,
-                            x,
-                            y,
-                          })
-                        )
-                        .reverse(),
-                    ],
-                  })
-                )
-              )}`,
-              result: "image",
-            },
-          }),
-          tag("feGaussianBlur", {
-            props: {
-              ["color-interpolation-filters"]: "sRGB",
-              in: "image",
-              result: "blur",
-              stdDeviation: `${8 * (y / x)},${12 * (x / y)}`,
-            },
-          }),
-          tag("feDisplacementMap", {
-            props: {
-              ["color-interpolation-filters"]: "sRGB",
-              in: "SourceGraphic",
-              in2: "blur",
-              result: "displacement",
-              scale: 200,
-              xChannelSelector: "R",
-              yChannelSelector: "G",
-            },
-          }),
-        ],
-      }),
-      tag("filter", {
-        props: {
-          height: "1024",
-          id: "texture",
-          width: "1024",
-          x: "0",
-          y: "0",
-        },
-        inner: [
-          tag("feTurbulence", {
-            props: {
-              ["color-interpolation-filters"]: "sRGB",
-              baseFrequency: 0.005,
-              result: "turbulence",
-              type: "fractalNoise",
-              seed,
-            },
-          }),
-          tag("feDisplacementMap", {
-            props: {
-              ["color-interpolation-filters"]: "sRGB",
-              in: "BackgroundImage",
-              in2: "turbulence",
-            },
-          }),
-        ],
-      }),
-      defs,
-      tag("g", { inner: base, props: { filter: "url(#noise)" } }),
-      inverse &&
-        tag("rect", {
-          props: {
-            fill: "#20222480",
-            height: 1024,
-            opacity: `${Math.abs(rawDepth) < 25 ? 25 : Math.abs(rawDepth)}%`,
-            width: 1024,
-            x: 0,
-            y: 0,
-          },
-        }),
-      tag("rect", {
-        props: {
-          fill,
-          height: 1024,
-          opacity: 0.5,
-          style: "mix-blend-mode: overlay",
-          width: 1024,
-          x: 0,
-          y: 0,
-        },
-      }),
-    ];
     elem.style.backgroundImage = `url('data:image/svg+xml;utf8,${encodeURIComponent(
       serializer.serializeToString(
         tag("svg", {
-          inner: content,
+          inner: [
+            tag("filter", {
+              inner: [
+                tag("feImage", {
+                  props: {
+                    href: `data:image/svg+xml;utf8,${encodeURIComponent(
+                      serializer.serializeToString(
+                        tag("svg", {
+                          props: { height: "1024", width: "1024", xmlns },
+                          inner: [
+                            tag("rect", {
+                              props: {
+                                fill: "white",
+                                height: "1024",
+                                width: "1024",
+                              },
+                            }),
+                            ...Array.from({ length: 24 })
+                              .map((_, index) =>
+                                sheen({
+                                  offset: Math.pow(
+                                    3,
+                                    index % 2 === 0
+                                      ? index / 4
+                                      : (index - 1) / 4
+                                  ),
+                                  radii,
+                                  stroke:
+                                    Math.ceil(index / 2) % 2 === 0
+                                      ? "red"
+                                      : "white",
+                                  vertical: index % 2 === 0,
+                                  x,
+                                  y,
+                                })
+                              )
+                              .reverse(),
+                          ],
+                        })
+                      )
+                    )}`,
+                    result: "image",
+                  },
+                }),
+                tag("feGaussianBlur", {
+                  props: {
+                    ["color-interpolation-filters"]: "sRGB",
+                    in: "image",
+                    result: "blur",
+                    stdDeviation: `${8 * (y / x)},${12 * (x / y)}`,
+                  },
+                }),
+                tag("feDisplacementMap", {
+                  props: {
+                    ["color-interpolation-filters"]: "sRGB",
+                    in: "SourceGraphic",
+                    in2: "blur",
+                    result: "displacement",
+                    scale: 200,
+                    xChannelSelector: "R",
+                    yChannelSelector: "G",
+                  },
+                }),
+              ],
+              props: {
+                filterUnits: "userSpaceOnUse",
+                height: "1024",
+                id: "noise",
+                width: "1024",
+                x: "0",
+                y: "0",
+              },
+            }),
+            tag("filter", {
+              inner: [
+                tag("feTurbulence", {
+                  props: {
+                    ["color-interpolation-filters"]: "sRGB",
+                    baseFrequency: 0.005,
+                    result: "turbulence",
+                    seed,
+                    type: "fractalNoise",
+                  },
+                }),
+                tag("feDisplacementMap", {
+                  props: {
+                    ["color-interpolation-filters"]: "sRGB",
+                    in: "BackgroundImage",
+                    in2: "turbulence",
+                  },
+                }),
+              ],
+              props: {
+                height: "1024",
+                id: "texture",
+                width: "1024",
+                x: "0",
+                y: "0",
+              },
+            }),
+            defs,
+            tag("g", { inner: base, props: { filter: "url(#noise)" } }),
+            inverse &&
+              tag("rect", {
+                props: {
+                  fill: "#20222480",
+                  height: 1024,
+                  opacity: `${rawDepth > -25 ? 25 : rawDepth * -1}%`,
+                  width: 1024,
+                  x: 0,
+                  y: 0,
+                },
+              }),
+            tag("rect", {
+              props: {
+                fill,
+                height: 1024,
+                opacity: 0.5,
+                style: "mix-blend-mode: overlay",
+                width: 1024,
+                x: 0,
+                y: 0,
+              },
+            }),
+          ],
           props: {
             preserveAspectRatio: "none",
             style: `transform: scale(1, ${inverse ? "-" : ""}1); ${lustre}`,
             viewBox: "0 0 1024 1024",
             xmlns,
-            // ["text-rendering"]: "optimizeSpeed",
-            // ["shape-rendering"]: "optimizeSpeed",
           },
         })
       )
     )}')`;
     elem.style.backgroundSize = "100% 100%";
     elem.style.border = "none";
-    // elem.style.textRendering = "geometricPrecision";
-    elem.style.textRendering = "optimizeSpeed";
+    !inverse &&
+      (elem.style.boxShadow = "#00000030 1px 2px 2px, #00000020 2px 4px 4px");
+    elem.style.textRendering = "geometricPrecision";
     elem.style.transform = "translateZ(0)";
     elem.style.transition = "none";
-    if (elem.querySelector("span")) {
-      elem.querySelector("span").style.color = inverse
-        ? "#000000ab"
-        : "#ffffffab";
-      elem.querySelector("span").style.display = "inline-block";
-      elem.querySelector("span").style.mixBlendMode = "luminosity";
-      elem.querySelector("span").style.textShadow = inverse
-        ? "white .5px .5px 1px"
-        : "black -.5px -.5px 1px";
-    }
+    elem.innerText.style.color = `#${inverse ? "000000" : "ffffff"}80`;
+    elem.innerText.style.display = "inline-block";
+    elem.innerText.style.mixBlendMode = inverse ? "overlay" : "luminosity";
+    elem.innerText.style.transform = `scale(${1 + (depth || 0) / 5000})`;
+    elem.innerText.style.textShadow = inverse
+      ? "white .5px .5px 1px"
+      : "black -.5px -.5px 1px";
   },
   traverse = () => document.querySelectorAll(".metallicss").forEach(metallicss);
 
