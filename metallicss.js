@@ -2,30 +2,30 @@ const base = [
     tag("rect", {
       props: {
         fill: "url(#gradient)",
-        height: 2048,
-        width: 2048,
-        x: -512,
-        y: -512,
+        height: 1024,
+        width: 1024,
+        x: 0,
+        y: 0,
       },
     }),
     tag("rect", {
       props: {
         filter: "url(#texture)",
-        height: 2048,
+        height: 1024,
         style: "mix-blend-mode: luminosity; opacity: 0.5",
-        width: 2048,
-        x: -512,
-        y: -512,
+        width: 1024,
+        x: 0,
+        y: 0,
       },
     }),
     tag("rect", {
       props: {
         filter: "url(#texture)",
-        height: 2048,
+        height: 1024,
         style: "mix-blend-mode: screen; opacity: 0.25",
-        width: 2048,
-        x: -512,
-        y: -512,
+        width: 1024,
+        x: 0,
+        y: 0,
       },
     }),
   ],
@@ -43,25 +43,6 @@ const base = [
           tag("stop", { props: { offset: "100%", ["stop-color"]: "#505050" } }),
         ],
         props: { id: "gradient", x1: 0, x2: 0, y1: 0, y2: 1 },
-      }),
-      tag("radialGradient", {
-        inner: [
-          tag("stop", {
-            props: {
-              ["stop-color"]: "#808080",
-              ["stop-opacity"]: 1,
-              offset: "25%",
-            },
-          }),
-          tag("stop", {
-            props: {
-              ["stop-color"]: "#808080",
-              ["stop-opacity"]: 0,
-              offset: "50%",
-            },
-          }),
-        ],
-        props: { id: "radial" },
       }),
     ],
   }),
@@ -138,38 +119,43 @@ export const metallicss = (elem, id, value) => {
               inner: [
                 tag("feImage", {
                   props: {
+                    height: 1024,
+                    width: 1024,
                     href: `data:image/svg+xml;utf8,${encodeURIComponent(
                       serializer.serializeToString(
                         tag("svg", {
-                          props: { height: 1024, width: 1024, xmlns },
+                          props: { height: 2048, width: 2048, xmlns },
                           inner: [
                             tag("rect", {
                               props: {
                                 fill: "white",
-                                height: 1024,
-                                width: 1024,
+                                height: 2048,
+                                width: 2048,
                               },
                             }),
-                            ...Array.from({ length: 24 })
-                              .map((_, index) =>
-                                sheen({
-                                  offset: Math.pow(
-                                    3,
-                                    index % 2 === 0
-                                      ? index / 4
-                                      : (index - 1) / 4
-                                  ),
-                                  radii,
-                                  stroke:
-                                    Math.ceil(index / 2) % 2 === 0
-                                      ? "red"
-                                      : "white",
-                                  vertical: index % 2 === 0,
-                                  x,
-                                  y,
-                                })
-                              )
-                              .reverse(),
+                            tag("g", {
+                              inner: Array.from({ length: 24 })
+                                .map((_, index) =>
+                                  sheen({
+                                    offset: Math.pow(
+                                      3,
+                                      index % 2 === 0
+                                        ? index / 4
+                                        : (index - 1) / 4
+                                    ),
+                                    radii,
+                                    stroke:
+                                      Math.ceil(index / 2) % 2 === 0
+                                        ? "red"
+                                        : "white",
+                                    vertical: index % 2 === 0,
+                                    x,
+                                    y,
+                                  })
+                                )
+                                .reverse(),
+                              props: { transform: "translate(512,512)" },
+                            }),
                           ],
                         })
                       )
@@ -182,7 +168,8 @@ export const metallicss = (elem, id, value) => {
                     ["color-interpolation-filters"]: "sRGB",
                     in: "image",
                     result: "blur",
-                    stdDeviation: `${8 * (y / x)},${12 * (x / y)}`,
+                    // stdDeviation: `${8 * (y / x)},${12 * (x / y)}`,
+                    stdDeviation: `${4 * (y / x)},${6 * (x / y)}`,
                   },
                 }),
                 tag("feDisplacementMap", {
@@ -191,7 +178,7 @@ export const metallicss = (elem, id, value) => {
                     in: "SourceGraphic",
                     in2: "blur",
                     result: "displacement",
-                    scale: 200,
+                    scale: 100,
                     xChannelSelector: "R",
                     yChannelSelector: "G",
                   },
@@ -199,9 +186,9 @@ export const metallicss = (elem, id, value) => {
               ],
               props: {
                 filterUnits: "userSpaceOnUse",
-                height: 1024,
+                height: 2048,
                 id: "noise",
-                width: 1024,
+                width: 2048,
                 x: 0,
                 y: 0,
               },
@@ -225,13 +212,7 @@ export const metallicss = (elem, id, value) => {
                   },
                 }),
               ],
-              props: {
-                height: 1024,
-                id: "texture",
-                width: 1024,
-                x: 0,
-                y: 0,
-              },
+              props: { height: 1024, id: "texture", width: 1024, x: 0, y: 0 },
             }),
             defs,
             tag("g", { inner: base, props: { filter: "url(#noise)" } }),
@@ -261,7 +242,7 @@ export const metallicss = (elem, id, value) => {
           props: {
             preserveAspectRatio: "none",
             style: `transform: scale(1, ${inverse ? "-" : ""}1); ${lustre}`,
-            viewBox: "0 0 1024 1024",
+            viewBox: "256 256 512 512",
             xmlns,
           },
         })
