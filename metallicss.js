@@ -119,6 +119,7 @@ export const metallicss = (elem, id, value) => {
               inner: [
                 tag("feImage", {
                   props: {
+                    preserveAspectRatio: "none",
                     height: 1024,
                     width: 1024,
                     href: `data:image/svg+xml;utf8,${encodeURIComponent(
@@ -168,7 +169,6 @@ export const metallicss = (elem, id, value) => {
                     ["color-interpolation-filters"]: "sRGB",
                     in: "image",
                     result: "blur",
-                    // stdDeviation: `${8 * (y / x)},${12 * (x / y)}`,
                     stdDeviation: `${4 * (y / x)},${6 * (x / y)}`,
                   },
                 }),
@@ -207,12 +207,18 @@ export const metallicss = (elem, id, value) => {
                 tag("feDisplacementMap", {
                   props: {
                     ["color-interpolation-filters"]: "sRGB",
-                    in: "BackgroundImage",
                     in2: "turbulence",
                   },
                 }),
               ],
-              props: { height: 1024, id: "texture", width: 1024, x: 0, y: 0 },
+              props: {
+                filterUnits: "userSpaceOnUse",
+                height: 1024,
+                id: "texture",
+                width: 1024,
+                x: 0,
+                y: 0,
+              },
             }),
             defs,
             tag("g", { inner: base, props: { filter: "url(#noise)" } }),
