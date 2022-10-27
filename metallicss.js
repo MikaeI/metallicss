@@ -267,7 +267,11 @@ export const metallicss = (elem, id, value) => {
     elem.style.transform = "translateZ(0)";
     elem.style.transition = "none";
   },
-  traverse = () => document.querySelectorAll(".metallicss").forEach(metallicss);
+  traverse = () =>
+    setTimeout(
+      () => document.querySelectorAll(".metallicss").forEach(metallicss),
+      0
+    );
 
 if (document.readyState !== "loading") traverse();
 else document.addEventListener("DOMContentLoaded", traverse);
