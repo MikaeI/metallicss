@@ -48,6 +48,7 @@ const base = [
   }),
   serializer = new XMLSerializer(),
   xmlns = "http://www.w3.org/2000/svg";
+let blocked = document.body.className.indexOf("block-metallicss") !== -1;
 
 function tag(name, { inner, props }) {
   const elem = document.createElementNS("http://www.w3.org/2000/svg", name);
@@ -78,9 +79,10 @@ function sheen({ offset, radii: { x: rx, y: ry }, stroke, vertical, x, y }) {
   });
 }
 
-export const metallicss = (elem, id, value) => {
-    id && value && elem.style.setProperty(id, value);
-
+export const unblock = () => {
+    blocked = false;
+  },
+  metallicss = (elem) => {
     const { offsetWidth: width, offsetHeight: height } = elem,
       { backgroundColor: background, borderRadius } = getComputedStyle(elem),
       depthValue = getComputedStyle(elem).getPropertyValue("--convexity"),
@@ -268,10 +270,13 @@ export const metallicss = (elem, id, value) => {
     elem.style.transition = "none";
   },
   traverse = () =>
-    setTimeout(
-      () => document.querySelectorAll(".metallicss").forEach(metallicss),
-      0
-    );
+    !blocked &&
+    Array.from(document.querySelectorAll(".metallicss"))
+      .filter(
+        (elem) =>
+          window.getComputedStyle(elem).getPropertyValue("display") != "none"
+      )
+      .forEach(metallicss);
 
 if (document.readyState !== "loading") traverse();
 else document.addEventListener("DOMContentLoaded", traverse);
