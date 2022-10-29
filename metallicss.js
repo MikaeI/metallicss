@@ -259,9 +259,9 @@ export const unblock = () => {
     elem.style.backgroundSize = "100% 100%";
     elem.style.border = "none";
     elem.style.boxShadow = inverse
-      ? "none"
+      ? "none !important"
       : "#00000030 1px 2px 2px, #00000020 2px 4px 4px";
-    elem.style.color = `#${inverse ? "000000" : "ffffff"}e0`;
+    elem.style.color = `#${inverse ? "404040" : "ffffff"}e0`;
     elem.style.textRendering = "geometricPrecision";
     elem.style.textShadow = inverse
       ? "white .5px .5px 1px"
