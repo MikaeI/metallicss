@@ -262,7 +262,7 @@ export const unblock = () => {
     elem.style.border = "none";
     elem.style.boxShadow = inverse
       ? "none !important"
-      : "#00000030 1px 2px 2px, #00000020 2px 4px 4px";
+      : "inset #00000040 0px -8px 20px, #00000030 1px 2px 2px, #00000020 2px 4px 4px";
     elem.style.color = `#${inverse ? "000000c0" : "ffffffe0"}`;
     elem.style.textRendering = "geometricPrecision";
     elem.style.textShadow = inverse
