@@ -6,8 +6,6 @@ Using the library is as simple as adding the class `metallicss`, and using CSS p
 
 ## Installation:
 
----
-
 - Download `dist/metallicss.min.js` or install with `npm i metallicss`
 
 - Import with `import metallicss from "metallicss";` or add a script tag before the closing `</body>` of your website: `<script type="module" src="metallicss.min.js"></script>`
