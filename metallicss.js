@@ -37,7 +37,7 @@ const base = [
           tag("stop", { props: { offset: "40%", ["stop-color"]: "#efefef" } }),
           tag("stop", { props: { offset: "45%", ["stop-color"]: "#909090" } }),
           tag("stop", { props: { offset: "50%", ["stop-color"]: "#707070" } }),
-          tag("stop", { props: { offset: "50%", ["stop-color"]: "#505050" } }),
+          tag("stop", { props: { offset: "50%", ["stop-color"]: "#303030" } }),
           tag("stop", { props: { offset: "60%", ["stop-color"]: "#909090" } }),
           tag("stop", { props: { offset: "70%", ["stop-color"]: "#505050" } }),
           tag("stop", { props: { offset: "100%", ["stop-color"]: "#505050" } }),
@@ -182,7 +182,7 @@ export const unblock = () => {
                     in: "SourceGraphic",
                     in2: "blur",
                     result: "displacement",
-                    scale: 100,
+                    scale: 50 + Math.abs(rawDepth),
                     xChannelSelector: "R",
                     yChannelSelector: "G",
                   },
@@ -260,9 +260,18 @@ export const unblock = () => {
     )}')`;
     elem.style.backgroundSize = "100% 100%";
     elem.style.border = "none";
-    elem.style.boxShadow = inverse
-      ? "none !important"
-      : "inset #00000040 0px -8px 20px, #00000030 1px 2px 2px, #00000020 2px 4px 4px";
+    elem.style.boxShadow = `inset #ffffff80 0px ${
+      inverse ? "-" : ""
+    }4px 8px, inset ${
+      {
+        copper: "#402020",
+        gold: "#604000",
+        iron: "#202020",
+        silver: "#404040",
+      }[metal || "iron"]
+    }${inverse ? "" : "c0"} 0px ${inverse ? "" : "-"}8px 16px ${
+      inverse ? "" : ", #00000030 1px 2px 2px, #00000020 2px 4px 4px"
+    }`;
     elem.style.color = `#${inverse ? "000000c0" : "ffffffe0"}`;
     elem.style.textRendering = "geometricPrecision";
     elem.style.textShadow = inverse
