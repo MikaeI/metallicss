@@ -36,8 +36,8 @@ const base = [
           tag("stop", { props: { offset: "35%", ["stop-color"]: "#b0b0b0" } }),
           tag("stop", { props: { offset: "40%", ["stop-color"]: "#efefef" } }),
           tag("stop", { props: { offset: "45%", ["stop-color"]: "#909090" } }),
-          tag("stop", { props: { offset: "50%", ["stop-color"]: "#707070" } }),
-          tag("stop", { props: { offset: "50%", ["stop-color"]: "#303030" } }),
+          tag("stop", { props: { offset: "49%", ["stop-color"]: "#707070" } }),
+          tag("stop", { props: { offset: "51%", ["stop-color"]: "#303030" } }),
           tag("stop", { props: { offset: "60%", ["stop-color"]: "#909090" } }),
           tag("stop", { props: { offset: "70%", ["stop-color"]: "#505050" } }),
           tag("stop", { props: { offset: "100%", ["stop-color"]: "#505050" } }),
@@ -102,7 +102,7 @@ export const unblock = () => {
           iron: "",
           silver: "brightness(1.125)",
         }[metal || "iron"]
-      } blur(${Math.abs(rawDepth) / 75}px)`,
+      }`,
       depth = rawDepth * ((height > width ? width : height) / 640),
       absDepth = Math.abs(depth),
       x = width / (64 * (absDepth / 10 + 1)),
@@ -182,7 +182,10 @@ export const unblock = () => {
                     in: "SourceGraphic",
                     in2: "blur",
                     result: "displacement",
-                    scale: 50 + Math.abs(rawDepth),
+                    scale:
+                      50 + Math.abs(rawDepth) > 100
+                        ? 100
+                        : 50 + Math.abs(rawDepth),
                     xChannelSelector: "R",
                     yChannelSelector: "G",
                   },
