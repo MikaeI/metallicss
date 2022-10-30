@@ -90,6 +90,10 @@ export const unblock = () => {
       metal = getComputedStyle(elem)
         .getPropertyValue("--metal")
         .replace(/ /g, ""),
+      rawDepth =
+        depthValue === "0%" || depthValue === " 0%"
+          ? 0
+          : (depthValue && parseInt(depthValue)) || 20,
       lustre = `filter: ${
         {
           copper:
@@ -98,11 +102,7 @@ export const unblock = () => {
           iron: "",
           silver: "brightness(1.125)",
         }[metal || "iron"]
-      }`,
-      rawDepth =
-        depthValue === "0%" || depthValue === " 0%"
-          ? 0
-          : (depthValue && parseInt(depthValue)) || 20,
+      } blur(${Math.abs(rawDepth) / 75}px)`,
       depth = rawDepth * ((height > width ? width : height) / 640),
       absDepth = Math.abs(depth),
       x = width / (64 * (absDepth / 10 + 1)),
@@ -272,7 +272,18 @@ export const unblock = () => {
     }${inverse ? "" : "c0"} 0px ${inverse ? "" : "-"}8px 16px ${
       inverse ? "" : ", #00000030 1px 2px 2px, #00000020 2px 4px 4px"
     }`;
-    elem.style.color = `#${inverse ? "000000c0" : "ffffffe0"}`;
+    elem.style.color = `#${
+      inverse
+        ? `${
+            {
+              copper: "100000",
+              gold: "302000",
+              iron: "000000",
+              silver: "101010",
+            }[metal || "iron"]
+          }c0`
+        : "ffffffe0"
+    }`;
     elem.style.textRendering = "geometricPrecision";
     elem.style.textShadow = inverse
       ? "white .5px .5px 1px"
