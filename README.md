@@ -6,6 +6,8 @@ MetalliCSS is a tiny, dependency-free JavaScript library that makes your CSS lit
 
 Using the library is as simple as adding the class `metallicss`, and using CSS properties for configuration (try it out [here](https://www.metallicss.com)).
 
+**✨ [Interactive demo](https://www.metallicss.com)**
+
 ## Installation:
 
 - Download `dist/metallicss.min.js` or install with `npm i metallicss`
