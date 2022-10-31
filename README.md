@@ -2,7 +2,7 @@
 
 <img src="https://metallicss.com/metallicss.png" alt="drawing" width="480"/>
 
-MetalliCSS is a tiny, dependency-free JavaScript library. It is open-source and free to use for unlimited personal and commercial projects.
+MetalliCSS is a tiny, dependency-free JavaScript library that makes your CSS literally shine. It is open-source and free to use for unlimited personal and commercial projects.
 
 Using the library is as simple as adding the class `metallicss`, and using CSS properties for configuration (try it out [here](https://www.metallicss.com)).
 
