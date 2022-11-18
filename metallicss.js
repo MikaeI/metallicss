@@ -100,7 +100,8 @@ export const unblock = () => {
             "brightness(0.85) sepia(0.5) saturate(2) hue-rotate(-33.75deg)",
           gold: "brightness(0.95) sepia(1) saturate(1.5)",
           iron: "",
-          silver: "brightness(1.125)",
+          silver:
+            "brightness(1.125) sepia(0.5) saturate(0.67) hue-rotate(180deg)",
         }[metal || "iron"]
       }`,
       depth = rawDepth * ((height > width ? width : height) / 640),
