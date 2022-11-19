@@ -87,6 +87,7 @@ export const unblock = () => {
       { backgroundColor: background, borderRadius } = getComputedStyle(elem),
       depthValue = getComputedStyle(elem).getPropertyValue("--convexity"),
       seed = getComputedStyle(elem).getPropertyValue("--seed") || 23,
+      scale = getComputedStyle(elem).getPropertyValue("--scale") || 4,
       metal = getComputedStyle(elem)
         .getPropertyValue("--metal")
         .replace(/ /g, ""),
@@ -96,8 +97,8 @@ export const unblock = () => {
           : (depthValue && parseInt(depthValue)) || 20,
       depth = rawDepth * ((height > width ? width : height) / 640),
       absDepth = Math.abs(depth),
-      x = width / (64 * (absDepth / 10 + 1)),
-      y = height / (64 * (absDepth / 10 + 1)),
+      x = width / (16 * scale * (absDepth / 10 + 1)),
+      y = height / (16 * scale * (absDepth / 10 + 1)),
       radius = parseInt(borderRadius),
       radii = {
         x: height / 2 < radius ? 512 * (y / x) : radius * (1024 / width),
@@ -183,7 +184,7 @@ export const unblock = () => {
                     ["color-interpolation-filters"]: "sRGB",
                     in: "image",
                     result: "blur",
-                    stdDeviation: `${4 * (y / x)},${6 * (x / y)}`,
+                    stdDeviation: `${scale * (y / x)},${scale * 1.5 * (x / y)}`,
                   },
                 }),
                 tag("feDisplacementMap", {
@@ -317,9 +318,14 @@ export const unblock = () => {
             defs,
             tag("g", {
               inner: [
-                tag("g", { inner: base, props: { filter: "url(#noise)" } }),
+                tag("g", {
+                  inner: [
+                    tag("g", { inner: base, props: { filter: "url(#noise)" } }),
+                  ],
+                  props: { filter: "url(#grain)" },
+                }),
               ],
-              props: { filter: "url(#grain) url(#lustre)" },
+              props: { filter: "url(#lustre)" },
             }),
             inverse &&
               tag("rect", {
