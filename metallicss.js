@@ -316,28 +316,45 @@ export const unblock = () => {
               },
             }),
             defs,
+            tag("radialGradient", {
+              inner: [
+                tag("stop", {
+                  props: {
+                    offset: "33%",
+                    ["stop-color"]: "black",
+                    ["stop-opacity"]: inverse ? 0.25 : 0,
+                  },
+                }),
+                tag("stop", {
+                  props: {
+                    offset: "67%",
+                    ["stop-color"]: "black",
+                    ["stop-opacity"]: inverse ? 0.5 : 0.25,
+                  },
+                }),
+              ],
+              props: { id: "radial" },
+            }),
             tag("g", {
               inner: [
                 tag("g", {
                   inner: [
                     tag("g", { inner: base, props: { filter: "url(#noise)" } }),
+                    tag("rect", {
+                      props: {
+                        fill: "url(#radial)",
+                        height: 1024,
+                        width: 1024,
+                        x: 0,
+                        y: 0,
+                      },
+                    }),
                   ],
                   props: { filter: "url(#grain)" },
                 }),
               ],
               props: { filter: "url(#lustre)" },
             }),
-            inverse &&
-              tag("rect", {
-                props: {
-                  fill: "#20222480",
-                  height: 1024,
-                  opacity: `${rawDepth > -25 ? 25 : rawDepth * -1}%`,
-                  width: 1024,
-                  x: 0,
-                  y: 0,
-                },
-              }),
           ],
           props: {
             preserveAspectRatio: "none",
