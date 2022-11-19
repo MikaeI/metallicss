@@ -94,16 +94,6 @@ export const unblock = () => {
         depthValue === "0%" || depthValue === " 0%"
           ? 0
           : (depthValue && parseInt(depthValue)) || 20,
-      lustre = `filter: ${
-        {
-          copper:
-            "brightness(0.85) sepia(0.5) saturate(2) hue-rotate(-33.75deg)",
-          gold: "brightness(0.95) sepia(1) saturate(1.5)",
-          iron: "",
-          silver:
-            "brightness(1.125) sepia(0.5) saturate(0.67) hue-rotate(180deg)",
-        }[metal || "iron"]
-      }`,
       depth = rawDepth * ((height > width ? width : height) / 640),
       absDepth = Math.abs(depth),
       x = width / (64 * (absDepth / 10 + 1)),
@@ -114,7 +104,25 @@ export const unblock = () => {
         y: width / 2 < radius ? 512 * (x / y) : radius * (1024 / height),
       },
       inverse = depth < 0,
-      fill = background === "rgba(0, 0, 0, 0)" ? "gray" : background;
+      fill =
+        background === "rgba(0, 0, 0, 0)"
+          ? "rgb(128, 128, 128)"
+          : metal === "gold"
+          ? "rgb(255, 215, 128)"
+          : metal === "copper"
+          ? "rgb(187, 128, 119)"
+          : metal === "silver"
+          ? "rgb(221, 231, 247)"
+          : metal === "lead"
+          ? "rgb(55, 55, 64)"
+          : background,
+      rgb = fill
+        .replace("rgb(", "")
+        .replace(")", "")
+        .replace(/ /g, "")
+        .split(",")
+        .map((str) => (parseInt(str) / 256).toFixed(3)),
+      matrix = `${rgb[0]} 0 0 0 0 0 ${rgb[1]} 0 0 0 0 0 ${rgb[2]} 0 0 0 0 0 1 0`;
 
     elem.style.backgroundImage = `url('data:image/svg+xml;utf8,${encodeURIComponent(
       serializer.serializeToString(
@@ -124,6 +132,7 @@ export const unblock = () => {
               inner: [
                 tag("feImage", {
                   props: {
+                    ["color-interpolation-filters"]: "sRGB",
                     preserveAspectRatio: "none",
                     height: 1024,
                     width: 1024,
@@ -228,8 +237,90 @@ export const unblock = () => {
                 y: 0,
               },
             }),
+            tag("filter", {
+              inner: [
+                tag("feTurbulence", {
+                  props: {
+                    ["color-interpolation-filters"]: "sRGB",
+                    baseFrequency: "0.0025,0.005",
+                    numOctaves: 3,
+                    type: "fractalNoise",
+                    stitchTiles: "stitch",
+                    result: "grain",
+                    seed,
+                  },
+                }),
+                tag("feDisplacementMap", {
+                  props: {
+                    ["color-interpolation-filters"]: "sRGB",
+                    in: "SourceGraphic",
+                    in2: "grain",
+                    scale: 5,
+                  },
+                }),
+              ],
+              props: {
+                id: "grain",
+              },
+            }),
+            tag("filter", {
+              inner: [
+                tag("feColorMatrix", {
+                  props: {
+                    ["color-interpolation-filters"]: "sRGB",
+                    in: "SourceGraphic",
+                    type: "matrix",
+                    values: matrix,
+                    result: "color",
+                  },
+                }),
+                tag("feComponentTransfer", {
+                  props: {
+                    ["color-interpolation-filters"]: "sRGB",
+                    in: "color",
+                    result: "brightness",
+                  },
+                  inner: [
+                    tag("feFuncR", {
+                      props: { type: "linear", slope: "2" },
+                    }),
+                    tag("feFuncG", {
+                      props: { type: "linear", slope: "2" },
+                    }),
+                    tag("feFuncB", {
+                      props: { type: "linear", slope: "2" },
+                    }),
+                  ],
+                }),
+                tag("feBlend", {
+                  props: {
+                    ["color-interpolation-filters"]: "sRGB",
+                    mode: "color",
+                    in: "color",
+                    in2: "SourceGraphic",
+                    result: "colorized",
+                  },
+                }),
+                tag("feBlend", {
+                  props: {
+                    ["color-interpolation-filters"]: "sRGB",
+                    mode: "soft-light",
+                    in: "brightness",
+                    in2: "colorized",
+                  },
+                }),
+              ],
+              props: {
+                id: "lustre",
+              },
+            }),
             defs,
-            tag("g", { inner: base, props: { filter: "url(#noise)" } }),
+            tag("g", {
+              inner: [
+                tag("g", { inner: base, props: { filter: "url(#noise)" } }),
+              ],
+              props: { filter: "url(#grain) url(#lustre)" },
+            }),
             inverse &&
               tag("rect", {
                 props: {
@@ -241,21 +332,10 @@ export const unblock = () => {
                   y: 0,
                 },
               }),
-            tag("rect", {
-              props: {
-                fill,
-                height: 1024,
-                opacity: 0.5,
-                style: "mix-blend-mode: overlay",
-                width: 1024,
-                x: 0,
-                y: 0,
-              },
-            }),
           ],
           props: {
             preserveAspectRatio: "none",
-            style: `transform: scale(1, ${inverse ? "-" : ""}1); ${lustre}`,
+            style: `transform: scale(1, ${inverse ? "-" : ""}1)`,
             viewBox: "256 256 512 512",
             xmlns,
           },
@@ -264,27 +344,19 @@ export const unblock = () => {
     )}')`;
     elem.style.backgroundSize = "100% 100%";
     elem.style.border = "none";
-    elem.style.boxShadow = `inset #ffffff80 0px ${
-      inverse ? "-" : ""
-    }4px 8px, inset ${
-      {
-        copper: "#402020",
-        gold: "#604000",
-        iron: "#202020",
-        silver: "#404040",
-      }[metal || "iron"]
-    }${inverse ? "" : "c0"} 0px ${inverse ? "" : "-"}8px 16px ${
-      inverse ? "" : ", #00000030 1px 2px 2px, #00000020 2px 4px 4px"
-    }`;
+    elem.style.boxShadow = inverse
+      ? ""
+      : "#00000030 1px 2px 2px, #00000020 2px 4px 4px";
     elem.style.color = `#${
       inverse
         ? `${
             {
               copper: "100000",
               gold: "302000",
-              iron: "000000",
-              silver: "101010",
-            }[metal || "iron"]
+              neutral: "000000",
+              silver: "001010",
+              lead: "000000",
+            }[metal || "neutral"]
           }c0`
         : "ffffffe0"
     }`;
