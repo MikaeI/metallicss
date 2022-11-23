@@ -371,7 +371,7 @@ export const unblock = () => {
       ? ""
       : "#00000030 1px 2px 2px, #00000020 2px 4px 4px";
     elem.style.color = `#${
-      inverse
+      inverse || height > 100
         ? `${
             {
               copper: "100000",
@@ -384,9 +384,8 @@ export const unblock = () => {
         : "ffffffe0"
     }`;
     elem.style.textRendering = "geometricPrecision";
-    elem.style.textShadow = inverse
-      ? "white .5px .5px 1px"
-      : "black -.5px -.5px 1px";
+    elem.style.textShadow =
+      inverse || height > 100 ? "white .5px .5px 1px" : "black -.5px -.5px 1px";
     elem.style.transform = "translateZ(0)";
     elem.style.transition = "none";
   },
