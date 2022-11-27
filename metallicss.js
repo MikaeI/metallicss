@@ -106,9 +106,7 @@ export const unblock = () => {
       },
       inverse = depth < 0,
       fill =
-        background === "rgba(0, 0, 0, 0)"
-          ? "rgb(128, 128, 128)"
-          : metal === "gold"
+        metal === "gold"
           ? "rgb(255, 215, 128)"
           : metal === "copper"
           ? "rgb(187, 128, 119)"
@@ -116,6 +114,8 @@ export const unblock = () => {
           ? "rgb(221, 231, 247)"
           : metal === "lead"
           ? "rgb(55, 55, 64)"
+          : background === "rgba(0, 0, 0, 0)"
+          ? "rgb(128, 128, 128)"
           : background,
       rgb = fill
         .replace("rgb(", "")
