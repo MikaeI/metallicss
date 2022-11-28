@@ -81,7 +81,10 @@ function sheen({ offset, radii: { x: rx, y: ry }, stroke, vertical, x, y }) {
   });
 }
 
-export const unblock = () => {
+export const block = () => {
+    blocked = true;
+  },
+  unblock = () => {
     blocked = false;
   },
   metallicss = (elem) => {
