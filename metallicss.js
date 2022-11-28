@@ -48,7 +48,9 @@ const base = [
   }),
   serializer = new XMLSerializer(),
   xmlns = "http://www.w3.org/2000/svg";
-let blocked = document.body.className.indexOf("block-metallicss") !== -1;
+let blocked =
+  document.body.className.indexOf("block-metallicss") !== -1 ||
+  document.body.querySelectorAll(".block-metallicss").length > 0;
 
 function tag(name, { inner, props }) {
   const elem = document.createElementNS("http://www.w3.org/2000/svg", name);
@@ -184,7 +186,9 @@ export const unblock = () => {
                     ["color-interpolation-filters"]: "sRGB",
                     in: "image",
                     result: "blur",
-                    stdDeviation: `${scale * (y / x)},${scale * 1.5 * (x / y)}`,
+                    stdDeviation: `${scale * (y / x) || 0},${
+                      scale * 1.5 * (x / y) || 0
+                    }`,
                   },
                 }),
                 tag("feDisplacementMap", {
