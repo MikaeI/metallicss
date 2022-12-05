@@ -81,6 +81,28 @@ function sheen({ offset, radii: { x: rx, y: ry }, stroke, vertical, x, y }) {
   });
 }
 
+function rasterify(svg) {
+  return new Promise(function (resolve) {
+    const domUrl = window.URL || window.webkitURL || window,
+      canvas = document.createElement("canvas");
+    let context, url, image;
+
+    canvas.width = 512;
+    canvas.height = 512;
+    context = canvas.getContext("2d");
+    url = domUrl.createObjectURL(
+      new Blob([svg], { type: "image/svg+xml;charset=utf-8" })
+    );
+    image = new Image();
+    image.onload = function () {
+      context.drawImage(this, 0, 0);
+      domUrl.revokeObjectURL(url);
+      resolve(canvas.toDataURL());
+    };
+    image.src = url;
+  });
+}
+
 export const block = () => {
     blocked = true;
   },
@@ -130,7 +152,7 @@ export const block = () => {
         .map((str) => (parseInt(str) / 256).toFixed(3)),
       matrix = `${rgb[0]} 0 0 0 0 0 ${rgb[1]} 0 0 0 0 0 ${rgb[2]} 0 0 0 0 0 1 0`;
 
-    elem.style.backgroundImage = `url('data:image/svg+xml;utf8,${encodeURIComponent(
+    elem.style.backgroundImage = rasterify(
       serializer.serializeToString(
         tag("svg", {
           inner: [
@@ -371,7 +393,7 @@ export const block = () => {
           },
         })
       )
-    )}')`;
+    );
     elem.style.backgroundSize = "100% 100%";
     elem.style.border = "none";
     elem.style.boxShadow = inverse
