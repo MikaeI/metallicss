@@ -152,7 +152,7 @@ export const block = () => {
         .map((str) => (parseInt(str) / 256).toFixed(3)),
       matrix = `${rgb[0]} 0 0 0 0 0 ${rgb[1]} 0 0 0 0 0 ${rgb[2]} 0 0 0 0 0 1 0`;
 
-    elem.style.backgroundImage = rasterify(
+    rasterify(
       serializer.serializeToString(
         tag("svg", {
           inner: [
@@ -393,7 +393,7 @@ export const block = () => {
           },
         })
       )
-    );
+    ).then((result) => (elem.style.backgroundImage = result));
     elem.style.backgroundSize = "100% 100%";
     elem.style.border = "none";
     elem.style.boxShadow = inverse
