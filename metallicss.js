@@ -103,6 +103,24 @@ function rasterify(svg) {
   });
 }
 
+function render(elem, source) {
+  const UA = navigator.userAgent,
+    isWebKit =
+      /\b(iPad|iPhone|iPod)\b/.test(UA) &&
+      /WebKit/.test(UA) &&
+      !/Edge/.test(UA) &&
+      !window.MSStream;
+
+  if (isWebKit) {
+    rasterify(source).then(
+      (result) => (elem.style.backgroundImage = `url(${result})`)
+    );
+  } else
+    elem.style.backgroundImage = `url('data:image/svg+xml;utf8,${encodeURIComponent(
+      source
+    )}')`;
+}
+
 export const block = () => {
     blocked = true;
   },
@@ -152,7 +170,8 @@ export const block = () => {
         .map((str) => (parseInt(str) / 256).toFixed(3)),
       matrix = `${rgb[0]} 0 0 0 0 0 ${rgb[1]} 0 0 0 0 0 ${rgb[2]} 0 0 0 0 0 1 0`;
 
-    rasterify(
+    render(
+      elem,
       serializer.serializeToString(
         tag("svg", {
           inner: [
@@ -393,14 +412,14 @@ export const block = () => {
           },
         })
       )
-    ).then((result) => (elem.style.backgroundImage = result));
+    );
     elem.style.backgroundSize = "100% 100%";
     elem.style.border = "none";
     elem.style.boxShadow = inverse
       ? ""
       : "#00000030 1px 2px 2px, #00000020 2px 4px 4px";
     elem.style.color = `#${
-      inverse || height > 100
+      (inverse || height > 100) && elem.innerText !== "MetalliCSS"
         ? `${
             {
               copper: "100000",
@@ -414,7 +433,9 @@ export const block = () => {
     }`;
     elem.style.textRendering = "geometricPrecision";
     elem.style.textShadow =
-      inverse || height > 100 ? "white .5px .5px 1px" : "black -.5px -.5px 1px";
+      (inverse || height > 100) && elem.innerText !== "MetalliCSS"
+        ? "white .5px .5px 1px"
+        : "black -.5px -.5px 1px";
     elem.style.transform = "translateZ(0)";
     elem.style.transition = "none";
   },
