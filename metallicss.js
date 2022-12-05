@@ -104,14 +104,11 @@ function rasterify(svg) {
 }
 
 function render(elem, source) {
-  const UA = navigator.userAgent,
-    isWebKit =
-      /\b(iPad|iPhone|iPod)\b/.test(UA) &&
-      /WebKit/.test(UA) &&
-      !/Edge/.test(UA) &&
-      !window.MSStream;
+  const isSafari =
+    navigator.userAgent.indexOf("Safari") > -1 &&
+    navigator.userAgent.indexOf("Chrome") <= -1;
 
-  if (isWebKit) {
+  if (isSafari) {
     rasterify(source).then(
       (result) => (elem.style.backgroundImage = `url(${result})`)
     );
