@@ -47,7 +47,8 @@ const base = [
     ],
   }),
   serializer = new XMLSerializer(),
-  xmlns = "http://www.w3.org/2000/svg";
+  xmlns = "http://www.w3.org/2000/svg",
+  domUrl = window.URL || window.webkitURL || window;
 let blocked =
   document.body.className.indexOf("block-metallicss") !== -1 ||
   document.body.querySelectorAll(".block-metallicss").length > 0;
@@ -68,54 +69,39 @@ function sheen({ offset, radii: { x: rx, y: ry }, stroke, vertical, x, y }) {
 
   return tag("rect", {
     props: {
-      "stroke-width": size,
+      "stroke-width": parseInt(size),
       fill: "none",
-      height: vertical ? 1024 + size : diff,
-      rx,
-      ry,
+      height: parseInt(vertical ? 1024 + size : diff),
+      rx: parseInt(rx),
+      ry: parseInt(ry),
       stroke,
-      width: vertical ? diff : 1024 + size,
-      x: vertical ? margin - size : -size / 2,
-      y: vertical ? -size / 2 : margin - size,
+      width: parseInt(vertical ? diff : 1024 + size),
+      x: parseInt(vertical ? margin - size : -size / 2),
+      y: parseInt(vertical ? -size / 2 : margin - size),
     },
   });
 }
 
-function rasterify(svg) {
-  return new Promise(function (resolve) {
-    const domUrl = window.URL || window.webkitURL || window,
-      canvas = document.createElement("canvas");
-    let context, url, image;
+function rasterify(elem, svg, callback) {
+  const url = domUrl.createObjectURL(
+      new Blob([svg], { type: "image/svg+xml;charset=utf-8" })
+    ),
+    image = new Image();
+
+  image.onload = function () {
+    const canvas = document.createElement("canvas"),
+      context = canvas.getContext("2d", { alpha: false });
 
     canvas.width = 512;
     canvas.height = 512;
-    context = canvas.getContext("2d");
-    url = domUrl.createObjectURL(
-      new Blob([svg], { type: "image/svg+xml;charset=utf-8" })
-    );
-    image = new Image();
-    image.onload = function () {
-      context.drawImage(this, 0, 0);
-      domUrl.revokeObjectURL(url);
-      resolve(canvas.toDataURL());
-    };
-    image.src = url;
-  });
-}
-
-function render(elem, source) {
-  const isSafari =
-    navigator.userAgent.indexOf("Safari") > -1 &&
-    navigator.userAgent.indexOf("Chrome") <= -1;
-
-  if (isSafari) {
-    rasterify(source).then(
-      (result) => (elem.style.backgroundImage = `url(${result})`)
-    );
-  } else
-    elem.style.backgroundImage = `url('data:image/svg+xml;utf8,${encodeURIComponent(
-      source
-    )}')`;
+    context.drawImage(this, 0, 0);
+    domUrl.revokeObjectURL(url);
+    if (callback) callback(canvas.toDataURL());
+    else elem.style.backgroundImage = `url(${canvas.toDataURL()})`;
+    canvas.remove();
+    image.remove();
+  };
+  image.src = url;
 }
 
 export const block = () => {
@@ -167,248 +153,245 @@ export const block = () => {
         .map((str) => (parseInt(str) / 256).toFixed(3)),
       matrix = `${rgb[0]} 0 0 0 0 0 ${rgb[1]} 0 0 0 0 0 ${rgb[2]} 0 0 0 0 0 1 0`;
 
-    render(
+    rasterify(
       elem,
       serializer.serializeToString(
         tag("svg", {
+          props: { height: 512, width: 512, xmlns },
           inner: [
-            tag("filter", {
-              inner: [
-                tag("feImage", {
-                  props: {
-                    ["color-interpolation-filters"]: "sRGB",
-                    preserveAspectRatio: "none",
-                    height: 1024,
-                    width: 1024,
-                    href: `data:image/svg+xml;utf8,${encodeURIComponent(
-                      serializer.serializeToString(
-                        tag("svg", {
-                          props: { height: 2048, width: 2048, xmlns },
-                          inner: [
-                            tag("rect", {
-                              props: {
-                                fill: "white",
-                                height: 2048,
-                                width: 2048,
-                              },
-                            }),
-                            tag("g", {
-                              inner: Array.from({ length: 24 })
-                                .map((_, index) =>
-                                  sheen({
-                                    offset: Math.pow(
-                                      3,
-                                      index % 2 === 0
-                                        ? index / 4
-                                        : (index - 1) / 4
-                                    ),
-                                    radii,
-                                    stroke:
-                                      Math.ceil(index / 2) % 2 === 0
-                                        ? "red"
-                                        : "white",
-                                    vertical: index % 2 === 0,
-                                    x,
-                                    y,
-                                  })
-                                )
-                                .reverse(),
-                              props: { transform: "translate(512,512)" },
-                            }),
-                          ],
-                        })
-                      )
-                    )}`,
-                    result: "image",
-                  },
-                }),
-                tag("feGaussianBlur", {
-                  props: {
-                    ["color-interpolation-filters"]: "sRGB",
-                    in: "image",
-                    result: "blur",
-                    stdDeviation: `${scale * (y / x) || 0},${
-                      scale * 1.5 * (x / y) || 0
-                    }`,
-                  },
-                }),
-                tag("feDisplacementMap", {
-                  props: {
-                    ["color-interpolation-filters"]: "sRGB",
-                    in: "SourceGraphic",
-                    in2: "blur",
-                    result: "displacement",
-                    scale:
-                      50 + Math.abs(rawDepth) > 100
-                        ? 100
-                        : 50 + Math.abs(rawDepth),
-                    xChannelSelector: "R",
-                    yChannelSelector: "G",
-                  },
-                }),
-              ],
-              props: {
-                filterUnits: "userSpaceOnUse",
-                height: 2048,
-                id: "noise",
-                width: 2048,
-                x: 0,
-                y: 0,
-              },
-            }),
-            tag("filter", {
-              inner: [
-                tag("feTurbulence", {
-                  props: {
-                    ["color-interpolation-filters"]: "sRGB",
-                    baseFrequency: 0.005,
-                    result: "turbulence",
-                    seed,
-                    type: "fractalNoise",
-                  },
-                }),
-                tag("feDisplacementMap", {
-                  props: {
-                    ["color-interpolation-filters"]: "sRGB",
-                    in2: "turbulence",
-                  },
-                }),
-              ],
-              props: {
-                filterUnits: "userSpaceOnUse",
-                height: 1024,
-                id: "texture",
-                width: 1024,
-                x: 0,
-                y: 0,
-              },
-            }),
-            tag("filter", {
-              inner: [
-                tag("feTurbulence", {
-                  props: {
-                    ["color-interpolation-filters"]: "sRGB",
-                    baseFrequency: "0.0025,0.005",
-                    numOctaves: 3,
-                    type: "fractalNoise",
-                    stitchTiles: "stitch",
-                    result: "grain",
-                    seed,
-                  },
-                }),
-                tag("feDisplacementMap", {
-                  props: {
-                    ["color-interpolation-filters"]: "sRGB",
-                    in: "SourceGraphic",
-                    in2: "grain",
-                    scale: 5,
-                  },
-                }),
-              ],
-              props: {
-                id: "grain",
-              },
-            }),
-            tag("filter", {
-              inner: [
-                tag("feColorMatrix", {
-                  props: {
-                    ["color-interpolation-filters"]: "sRGB",
-                    in: "SourceGraphic",
-                    type: "matrix",
-                    values: matrix,
-                    result: "color",
-                  },
-                }),
-                tag("feComponentTransfer", {
-                  props: {
-                    ["color-interpolation-filters"]: "sRGB",
-                    in: "color",
-                    result: "brightness",
-                  },
-                  inner: [
-                    tag("feFuncR", {
-                      props: { type: "linear", slope: "2" },
-                    }),
-                    tag("feFuncG", {
-                      props: { type: "linear", slope: "2" },
-                    }),
-                    tag("feFuncB", {
-                      props: { type: "linear", slope: "2" },
-                    }),
-                  ],
-                }),
-                tag("feBlend", {
-                  props: {
-                    ["color-interpolation-filters"]: "sRGB",
-                    mode: "color",
-                    in: "color",
-                    in2: "SourceGraphic",
-                    result: "colorized",
-                  },
-                }),
-                tag("feBlend", {
-                  props: {
-                    ["color-interpolation-filters"]: "sRGB",
-                    mode: "soft-light",
-                    in: "brightness",
-                    in2: "colorized",
-                  },
-                }),
-              ],
-              props: {
-                id: "lustre",
-              },
-            }),
-            defs,
-            tag("radialGradient", {
-              inner: [
-                tag("stop", {
-                  props: {
-                    offset: "33%",
-                    ["stop-color"]: "black",
-                    ["stop-opacity"]: inverse ? 0.25 : 0,
-                  },
-                }),
-                tag("stop", {
-                  props: {
-                    offset: "67%",
-                    ["stop-color"]: "black",
-                    ["stop-opacity"]: inverse ? 0.5 : 0.25,
-                  },
-                }),
-              ],
-              props: { id: "radial" },
-            }),
+            tag("rect", { props: { fill: "white", height: 512, width: 512 } }),
             tag("g", {
+              inner: Array.from({ length: 24 })
+                .map((_, index) =>
+                  sheen({
+                    offset: Math.pow(
+                      3,
+                      index % 2 === 0 ? index / 4 : (index - 1) / 4
+                    ),
+                    radii,
+                    stroke: Math.ceil(index / 2) % 2 === 0 ? "red" : "white",
+                    vertical: index % 2 === 0,
+                    x,
+                    y,
+                  })
+                )
+                .reverse(),
+              props: { transform: "scale(0.25) translate(512,512)" },
+            }),
+          ],
+        })
+      ),
+      (inner) =>
+        rasterify(
+          elem,
+          serializer.serializeToString(
+            tag("svg", {
               inner: [
-                tag("g", {
+                tag("filter", {
                   inner: [
-                    tag("g", { inner: base, props: { filter: "url(#noise)" } }),
-                    tag("rect", {
+                    tag("feImage", {
                       props: {
-                        fill: "url(#radial)",
+                        ["color-interpolation-filters"]: "sRGB",
+                        preserveAspectRatio: "none",
                         height: 1024,
                         width: 1024,
-                        x: 0,
-                        y: 0,
+                        href: inner,
+                        result: "image",
+                      },
+                    }),
+                    tag("feGaussianBlur", {
+                      props: {
+                        ["color-interpolation-filters"]: "sRGB",
+                        in: "image",
+                        result: "blur",
+                        stdDeviation: `${scale * (y / x) || 0},${
+                          scale * 1.5 * (x / y) || 0
+                        }`,
+                      },
+                    }),
+                    tag("feDisplacementMap", {
+                      props: {
+                        ["color-interpolation-filters"]: "sRGB",
+                        in: "SourceGraphic",
+                        in2: "blur",
+                        result: "displacement",
+                        scale:
+                          50 + Math.abs(rawDepth) > 100
+                            ? 100
+                            : 50 + Math.abs(rawDepth),
+                        xChannelSelector: "R",
+                        yChannelSelector: "G",
                       },
                     }),
                   ],
-                  props: { filter: "url(#grain)" },
+                  props: {
+                    filterUnits: "userSpaceOnUse",
+                    height: 2048,
+                    id: "noise",
+                    width: 2048,
+                    x: 0,
+                    y: 0,
+                  },
+                }),
+                tag("filter", {
+                  inner: [
+                    tag("feTurbulence", {
+                      props: {
+                        ["color-interpolation-filters"]: "sRGB",
+                        baseFrequency: 0.005,
+                        result: "turbulence",
+                        seed,
+                        type: "fractalNoise",
+                      },
+                    }),
+                    tag("feDisplacementMap", {
+                      props: {
+                        ["color-interpolation-filters"]: "sRGB",
+                        in2: "turbulence",
+                      },
+                    }),
+                  ],
+                  props: {
+                    filterUnits: "userSpaceOnUse",
+                    height: 1024,
+                    id: "texture",
+                    width: 1024,
+                    x: 0,
+                    y: 0,
+                  },
+                }),
+                tag("filter", {
+                  inner: [
+                    tag("feTurbulence", {
+                      props: {
+                        ["color-interpolation-filters"]: "sRGB",
+                        baseFrequency: "0.0025,0.005",
+                        numOctaves: 3,
+                        type: "fractalNoise",
+                        stitchTiles: "stitch",
+                        result: "grain",
+                        seed,
+                      },
+                    }),
+                    tag("feDisplacementMap", {
+                      props: {
+                        ["color-interpolation-filters"]: "sRGB",
+                        in: "SourceGraphic",
+                        in2: "grain",
+                        scale: 5,
+                      },
+                    }),
+                  ],
+                  props: {
+                    id: "grain",
+                  },
+                }),
+                tag("filter", {
+                  inner: [
+                    tag("feColorMatrix", {
+                      props: {
+                        ["color-interpolation-filters"]: "sRGB",
+                        in: "SourceGraphic",
+                        type: "matrix",
+                        values: matrix,
+                        result: "color",
+                      },
+                    }),
+                    tag("feComponentTransfer", {
+                      props: {
+                        ["color-interpolation-filters"]: "sRGB",
+                        in: "color",
+                        result: "brightness",
+                      },
+                      inner: [
+                        tag("feFuncR", {
+                          props: { type: "linear", slope: "2" },
+                        }),
+                        tag("feFuncG", {
+                          props: { type: "linear", slope: "2" },
+                        }),
+                        tag("feFuncB", {
+                          props: { type: "linear", slope: "2" },
+                        }),
+                      ],
+                    }),
+                    tag("feBlend", {
+                      props: {
+                        ["color-interpolation-filters"]: "sRGB",
+                        mode: "color",
+                        in: "color",
+                        in2: "SourceGraphic",
+                        result: "colorized",
+                      },
+                    }),
+                    tag("feBlend", {
+                      props: {
+                        ["color-interpolation-filters"]: "sRGB",
+                        mode: "soft-light",
+                        in: "brightness",
+                        in2: "colorized",
+                      },
+                    }),
+                  ],
+                  props: {
+                    id: "lustre",
+                  },
+                }),
+                defs,
+                tag("radialGradient", {
+                  inner: [
+                    tag("stop", {
+                      props: {
+                        offset: "33%",
+                        ["stop-color"]: "black",
+                        ["stop-opacity"]: inverse ? 0.25 : 0,
+                      },
+                    }),
+                    tag("stop", {
+                      props: {
+                        offset: "67%",
+                        ["stop-color"]: "black",
+                        ["stop-opacity"]: inverse ? 0.5 : 0.25,
+                      },
+                    }),
+                  ],
+                  props: { id: "radial" },
+                }),
+                tag("g", {
+                  inner: [
+                    tag("g", {
+                      inner: [
+                        tag("g", {
+                          inner: base,
+                          props: { filter: "url(#noise)" },
+                        }),
+                        tag("rect", {
+                          props: {
+                            fill: "url(#radial)",
+                            height: 1024,
+                            width: 1024,
+                            x: 0,
+                            y: 0,
+                          },
+                        }),
+                      ],
+                      props: { filter: "url(#grain)" },
+                    }),
+                  ],
+                  props: { filter: "url(#lustre)" },
                 }),
               ],
-              props: { filter: "url(#lustre)" },
-            }),
-          ],
-          props: {
-            preserveAspectRatio: "none",
-            style: `transform: scale(1, ${inverse ? "-" : ""}1)`,
-            viewBox: "256 256 512 512",
-            xmlns,
-          },
-        })
-      )
+              props: {
+                height: 512,
+                width: 512,
+                preserveAspectRatio: "none",
+                style: `transform: scale(1, ${inverse ? "-" : ""}1)`,
+                viewBox: "256 256 512 512",
+                xmlns,
+              },
+            })
+          )
+        )
     );
     elem.style.backgroundSize = "100% 100%";
     elem.style.border = "none";
