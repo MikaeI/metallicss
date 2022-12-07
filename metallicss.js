@@ -60,18 +60,18 @@ function rasterify(elem, svg, callback) {
     image = callback ? new Image() : elem.querySelector(".metal");
 
   image.onload = function () {
-    const canvas = document.createElement("canvas"),
-      context = canvas.getContext("2d", { alpha: false });
-
-    canvas.width = 512;
-    canvas.height = 512;
-    context.drawImage(this, 0, 0);
-    domUrl.revokeObjectURL(url);
     if (callback) {
+      const canvas = document.createElement("canvas"),
+        context = canvas.getContext("2d", { alpha: false });
+
+      canvas.width = 512;
+      canvas.height = 512;
+      context.drawImage(this, 0, 0);
+      domUrl.revokeObjectURL(url);
       image.remove();
       callback(canvas.toDataURL());
+      canvas.remove();
     }
-    canvas.remove();
   };
   image.src = url;
 }
@@ -180,7 +180,7 @@ export const metallicss = (elem) => {
                 tag("feTurbulence", {
                   props: {
                     ["color-interpolation-filters"]: "sRGB",
-                    baseFrequency: 0.005,
+                    baseFrequency: 0.0025,
                     result: "turbulence",
                     seed,
                     type: "turbulence",
@@ -362,8 +362,12 @@ export const metallicss = (elem) => {
       backdrop.style.top = "0";
       backdrop.style.left = "0";
       backdrop.style.zIndex = "-1";
-      backdrop.style.width = "100%";
-      backdrop.style.height = "100%";
+      backdrop.style.maxWidth = "200%";
+      backdrop.style.maxHeight = "200%";
+      backdrop.style.width = "200%";
+      backdrop.style.height = "200%";
+      backdrop.style.transformOrigin = "top left";
+      backdrop.style.transform = "scale(0.5)";
     }
   },
   traverse = () =>
