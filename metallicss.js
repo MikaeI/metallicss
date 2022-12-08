@@ -7,14 +7,14 @@ const base = [
     inner: [
       tag("linearGradient", {
         inner: [
-          tag("stop", { props: { offset: "35%", ["stop-color"]: "#b0b0b0" } }),
-          tag("stop", { props: { offset: "40%", ["stop-color"]: "#efefef" } }),
-          tag("stop", { props: { offset: "45%", ["stop-color"]: "#909090" } }),
-          tag("stop", { props: { offset: "49%", ["stop-color"]: "#707070" } }),
-          tag("stop", { props: { offset: "51%", ["stop-color"]: "#303030" } }),
-          tag("stop", { props: { offset: "60%", ["stop-color"]: "#909090" } }),
-          tag("stop", { props: { offset: "70%", ["stop-color"]: "#505050" } }),
-          tag("stop", { props: { offset: "100%", ["stop-color"]: "#505050" } }),
+          tag("stop", { props: { offset: "35%", ["stop-color"]: "#e0e0e0" } }),
+          tag("stop", { props: { offset: "40%", ["stop-color"]: "#ffffff" } }),
+          tag("stop", { props: { offset: "45%", ["stop-color"]: "#c0c0c0" } }),
+          tag("stop", { props: { offset: "49%", ["stop-color"]: "#a0a0a0" } }),
+          tag("stop", { props: { offset: "51%", ["stop-color"]: "#606060" } }),
+          tag("stop", { props: { offset: "60%", ["stop-color"]: "#c0c0c0" } }),
+          tag("stop", { props: { offset: "70%", ["stop-color"]: "#808080" } }),
+          tag("stop", { props: { offset: "100%", ["stop-color"]: "#808080" } }),
         ],
         props: { id: "gradient", x1: 0, x2: 0, y1: 0, y2: 1 },
       }),
@@ -59,8 +59,8 @@ function rasterify(elem, svg, callback) {
     ),
     image = callback ? new Image() : elem.querySelector(".metal");
 
-  image.onload = function () {
-    if (callback) {
+  if (callback) {
+    image.onload = function () {
       const canvas = document.createElement("canvas"),
         context = canvas.getContext("2d", { alpha: false });
 
@@ -71,8 +71,8 @@ function rasterify(elem, svg, callback) {
       image.remove();
       callback(canvas.toDataURL());
       canvas.remove();
-    }
-  };
+    };
+  }
   image.src = url;
 }
 
@@ -80,7 +80,6 @@ export const metallicss = (elem) => {
     const { offsetWidth: width, offsetHeight: height } = elem,
       { backgroundColor: background, borderRadius } = getComputedStyle(elem),
       depthValue = getComputedStyle(elem).getPropertyValue("--convexity"),
-      seed = getComputedStyle(elem).getPropertyValue("--seed") || 23,
       scale = getComputedStyle(elem).getPropertyValue("--scale") || 4,
       metal = getComputedStyle(elem)
         .getPropertyValue("--metal")
@@ -116,11 +115,10 @@ export const metallicss = (elem) => {
         .replace(")", "")
         .replace(/ /g, "")
         .split(",")
-        .map((str) => (parseInt(str) / 256).toFixed(3)),
-      backdrop = elem.querySelector(".metal");
+        .map((str) => (parseInt(str) / 256).toFixed(3));
 
     if (width === 0 || height === 0) return;
-    if (backdrop === null) {
+    if (elem.querySelector(".metal") === null) {
       const image = new Image();
 
       image.className = "metal";
@@ -128,13 +126,13 @@ export const metallicss = (elem) => {
     }
     if (
       document.getElementById(
-        `svg_for_filter_lustre_${fill.replace(/ /g, "")}_${seed}`
+        `svg_for_filter_lustre_${fill.replace(/ /g, "")}`
       ) === null
     )
       document.body.append(
         tag("svg", {
           props: {
-            id: `svg_for_filter_lustre_${fill.replace(/ /g, "")}_${seed}`,
+            id: `svg_for_filter_lustre_${fill.replace(/ /g, "")}`,
             width: 0,
             height: 0,
           },
@@ -150,63 +148,16 @@ export const metallicss = (elem) => {
                     result: "color",
                   },
                 }),
-                tag("feComponentTransfer", {
-                  props: {
-                    ["color-interpolation-filters"]: "sRGB",
-                    in: "color",
-                    result: "brightness",
-                  },
-                  inner: [
-                    tag("feFuncR", {
-                      props: { type: "linear", slope: "2" },
-                    }),
-                    tag("feFuncG", {
-                      props: { type: "linear", slope: "2" },
-                    }),
-                    tag("feFuncB", {
-                      props: { type: "linear", slope: "2" },
-                    }),
-                  ],
-                }),
-                tag("feBlend", {
-                  props: {
-                    ["color-interpolation-filters"]: "sRGB",
-                    mode: "color",
-                    in: "color",
-                    in2: "SourceGraphic",
-                    result: "colorized",
-                  },
-                }),
-                tag("feTurbulence", {
-                  props: {
-                    ["color-interpolation-filters"]: "sRGB",
-                    baseFrequency: 0.0025,
-                    result: "turbulence",
-                    seed,
-                    type: "turbulence",
-                  },
-                }),
-                tag("feBlend", {
-                  props: {
-                    ["color-interpolation-filters"]: "sRGB",
-                    mode: "screen",
-                    in: "turbulence",
-                    in2: "colorized",
-                    result: "randomized",
-                  },
-                }),
                 tag("feBlend", {
                   props: {
                     ["color-interpolation-filters"]: "sRGB",
                     mode: "soft-light",
-                    in: "brightness",
-                    in2: "randomized",
+                    in: "color",
+                    in2: "SourceGraphic",
                   },
                 }),
               ],
-              props: {
-                id: `lustre_${fill.replace(/ /g, "")}_${seed}`,
-              },
+              props: { id: `lustre_${fill.replace(/ /g, "")}` },
             }),
           ],
         })
@@ -334,10 +285,9 @@ export const metallicss = (elem) => {
           )
         )
     );
-    elem.style.backgroundSize = "100% 100%";
     elem.style.boxShadow = inverse
-      ? ""
-      : "#00000030 1px 2px 2px, #00000020 2px 4px 4px";
+      ? "inset #00000080 0px 1000px 0px"
+      : "inset #00000080 0px 1000px 0px, #00000030 1px 2px 2px, #00000020 2px 4px 4px";
     elem.style.color = `${
       inverse || (height > 100 && elem.innerText !== "MetalliCSS")
         ? "black"
@@ -350,25 +300,23 @@ export const metallicss = (elem) => {
         : "black -.5px -.5px 1px";
     elem.style.transform = "translateZ(0)";
     elem.style.overflow = "hidden";
-    if (backdrop) {
-      backdrop.style.filter = "";
-      setTimeout(() => {
+    if (elem.querySelector(".metal"))
+      ((backdrop = elem.querySelector(".metal")) => {
         backdrop.style.filter = `url("#lustre_${fill.replace(
           / /g,
           ""
-        )}_${seed}")`;
-      }, 0);
-      backdrop.style.position = "absolute";
-      backdrop.style.top = "0";
-      backdrop.style.left = "0";
-      backdrop.style.zIndex = "-1";
-      backdrop.style.maxWidth = "200%";
-      backdrop.style.maxHeight = "200%";
-      backdrop.style.width = "200%";
-      backdrop.style.height = "200%";
-      backdrop.style.transformOrigin = "top left";
-      backdrop.style.transform = "scale(0.5)";
-    }
+        )}") saturate(300%)`;
+        backdrop.style.position = "absolute";
+        backdrop.style.top = "0";
+        backdrop.style.left = "0";
+        backdrop.style.zIndex = "-1";
+        backdrop.style.maxWidth = "200%";
+        backdrop.style.maxHeight = "200%";
+        backdrop.style.width = "200%";
+        backdrop.style.height = "200%";
+        backdrop.style.transformOrigin = "top left";
+        backdrop.style.transform = "scale(0.5)";
+      })();
   },
   traverse = () =>
     Array.from(document.querySelectorAll(".metallicss")).forEach(metallicss);
