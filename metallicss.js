@@ -57,7 +57,7 @@ function rasterify(elem, svg, callback) {
   const url = domUrl.createObjectURL(
       new Blob([svg], { type: "image/svg+xml;charset=utf-8" })
     ),
-    image = callback ? new Image() : elem.querySelector(".metal");
+    image = callback ? new Image() : elem.querySelector(":scope > .metal");
 
   if (callback) {
     image.onload = function () {
@@ -118,7 +118,7 @@ export const metallicss = (elem) => {
         .map((str) => (parseInt(str) / 256).toFixed(3));
 
     if (width === 0 || height === 0) return;
-    if (elem.querySelector(".metal") === null) {
+    if (elem.querySelector(":scope > .metal") === null) {
       const image = new Image();
 
       image.className = "metal";
@@ -286,8 +286,8 @@ export const metallicss = (elem) => {
         )
     );
     elem.style.boxShadow = inverse
-      ? "inset #00000080 0px 1000px 0px"
-      : "inset #00000080 0px 1000px 0px, #00000030 1px 2px 2px, #00000020 2px 4px 4px";
+      ? "inset black 0px 1000px 0px"
+      : "inset black 0px 1000px 0px, #00000030 1px 2px 2px, #00000020 2px 4px 4px";
     elem.style.color = `${
       inverse || (height > 100 && elem.innerText !== "MetalliCSS")
         ? "black"
@@ -300,8 +300,8 @@ export const metallicss = (elem) => {
         : "black -.5px -.5px 1px";
     elem.style.transform = "translateZ(0)";
     elem.style.overflow = "hidden";
-    if (elem.querySelector(".metal"))
-      ((backdrop = elem.querySelector(".metal")) => {
+    if (elem.querySelector(":scope > .metal"))
+      ((backdrop = elem.querySelector(":scope > .metal")) => {
         backdrop.style.filter = `url("#lustre_${fill.replace(
           / /g,
           ""
