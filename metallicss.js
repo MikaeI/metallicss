@@ -64,8 +64,8 @@ function rasterify(elem, svg, callback) {
       const canvas = document.createElement("canvas"),
         context = canvas.getContext("2d", { alpha: false });
 
-      canvas.width = 512;
-      canvas.height = 512;
+      canvas.width = 1024;
+      canvas.height = 1024;
       context.drawImage(this, 0, 0);
       domUrl.revokeObjectURL(url);
       image.remove();
@@ -166,9 +166,11 @@ export const metallicss = (elem) => {
       elem,
       serializer.serializeToString(
         tag("svg", {
-          props: { height: 512, width: 512, xmlns },
+          props: { height: 1024, width: 1024, xmlns },
           inner: [
-            tag("rect", { props: { fill: "white", height: 512, width: 512 } }),
+            tag("rect", {
+              props: { fill: "white", height: 1024, width: 1024 },
+            }),
             tag("g", {
               inner: Array.from({ length: 24 })
                 .map((_, index) =>
@@ -185,7 +187,7 @@ export const metallicss = (elem) => {
                   })
                 )
                 .reverse(),
-              props: { transform: "scale(0.25) translate(512,512)" },
+              props: { transform: "scale(0.5) translate(512,512)" },
             }),
           ],
         })
@@ -302,10 +304,15 @@ export const metallicss = (elem) => {
     elem.style.overflow = "hidden";
     if (elem.querySelector(":scope > .metal"))
       ((backdrop = elem.querySelector(":scope > .metal")) => {
-        backdrop.style.filter = `url("#lustre_${fill.replace(
-          / /g,
-          ""
-        )}") saturate(300%)`;
+        backdrop.style.filter = "";
+        setTimeout(
+          () =>
+            (backdrop.style.filter = `url("#lustre_${fill.replace(
+              / /g,
+              ""
+            )}") saturate(300%) brightness(1.0625) contrast(1.0625)`),
+          0
+        );
         backdrop.style.position = "absolute";
         backdrop.style.top = "0";
         backdrop.style.left = "0";
