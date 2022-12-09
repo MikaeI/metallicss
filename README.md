@@ -1,6 +1,6 @@
 # Versatile metallic finish for CSS
 
-<img src="https://metallicss.com/metallicss.png" alt="drawing" width="480"/>
+<img src="https://metallicss.com/some.png" alt="drawing" width="480" />
 
 MetalliCSS is a tiny, dependency-free JavaScript library that makes your CSS literally shine.
 
