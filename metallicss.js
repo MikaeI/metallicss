@@ -3,23 +3,6 @@ const base = [
       props: { fill: "url(#gradient)", height: 1024, width: 1024, x: 0, y: 0 },
     }),
   ],
-  defs = tag("defs", {
-    inner: [
-      tag("linearGradient", {
-        inner: [
-          tag("stop", { props: { offset: "33%", ["stop-color"]: "#e0e0e0" } }),
-          tag("stop", { props: { offset: "38%", ["stop-color"]: "#ffffff" } }),
-          tag("stop", { props: { offset: "43%", ["stop-color"]: "#c0c0c0" } }),
-          tag("stop", { props: { offset: "47%", ["stop-color"]: "#a0a0a0" } }),
-          tag("stop", { props: { offset: "49%", ["stop-color"]: "#606060" } }),
-          tag("stop", { props: { offset: "58%", ["stop-color"]: "#c0c0c0" } }),
-          tag("stop", { props: { offset: "68%", ["stop-color"]: "#808080" } }),
-          tag("stop", { props: { offset: "98%", ["stop-color"]: "#808080" } }),
-        ],
-        props: { id: "gradient", x1: 0, x2: 0, y1: 0, y2: 1 },
-      }),
-    ],
-  }),
   serializer = new XMLSerializer(),
   xmlns = "http://www.w3.org/2000/svg",
   domUrl = window.URL || window.webkitURL || window;
@@ -51,6 +34,25 @@ function sheen({ offset, radii: { x: rx, y: ry }, stroke, vertical, x, y }) {
       y: parseInt(vertical ? -size / 2 : margin - size),
     },
   });
+}
+
+function angleToPoints(angle) {
+  const segment = Math.floor((angle / Math.PI) * 2) + 2,
+    diagonal = ((1 / 2) * segment + 1 / 4) * Math.PI,
+    op = Math.cos(Math.abs(diagonal - angle)) * Math.sqrt(2),
+    x = op * Math.cos(angle),
+    y = op * Math.sin(angle);
+
+  return {
+    x1: x < 0 ? 1 : 0,
+    y1: y < 0 ? 1 : 0,
+    x2: x >= 0 ? x : x + 1,
+    y2: y >= 0 ? y : y + 1,
+  };
+}
+
+function toRadians(degrees) {
+  return (degrees / 180) * Math.PI;
 }
 
 function rasterify(elem, svg, callback) {
@@ -98,6 +100,16 @@ export const metallicss = (elem) => {
         y: width / 2 < radius ? 512 * (x / y) : radius * (1024 / height),
       },
       inverse = depth < 0,
+      rotation = inverse
+        ? getComputedStyle(elem).getPropertyValue("--rotation") * -1
+        : getComputedStyle(elem).getPropertyValue("--rotation") || "0",
+      angle = {
+        2: -67.5,
+        1: -78.75,
+        0: -90,
+        ["-1"]: -101.25,
+        ["-2"]: -112.5,
+      }[rotation],
       fill =
         metal === "gold"
           ? "rgb(255, 215, 128)"
@@ -115,7 +127,8 @@ export const metallicss = (elem) => {
         .replace(")", "")
         .replace(/ /g, "")
         .split(",")
-        .map((str) => (parseInt(str) / 256).toFixed(3));
+        .map((str) => (parseInt(str) / 256).toFixed(3)),
+      pair = angleToPoints(toRadians(angle));
 
     if (width === 0 || height === 0) return;
     if (elem.querySelector(":scope > .metal") === null) {
@@ -274,7 +287,41 @@ export const metallicss = (elem) => {
                     y: 0,
                   },
                 }),
-                defs,
+                tag("linearGradient", {
+                  inner: [
+                    tag("stop", {
+                      props: { offset: "33%", ["stop-color"]: "#e0e0e0" },
+                    }),
+                    tag("stop", {
+                      props: { offset: "38%", ["stop-color"]: "#ffffff" },
+                    }),
+                    tag("stop", {
+                      props: { offset: "43%", ["stop-color"]: "#c0c0c0" },
+                    }),
+                    tag("stop", {
+                      props: { offset: "47%", ["stop-color"]: "#a0a0a0" },
+                    }),
+                    tag("stop", {
+                      props: { offset: "49%", ["stop-color"]: "#606060" },
+                    }),
+                    tag("stop", {
+                      props: { offset: "58%", ["stop-color"]: "#c0c0c0" },
+                    }),
+                    tag("stop", {
+                      props: { offset: "68%", ["stop-color"]: "#808080" },
+                    }),
+                    tag("stop", {
+                      props: { offset: "98%", ["stop-color"]: "#808080" },
+                    }),
+                  ],
+                  props: {
+                    id: "gradient",
+                    x1: pair.x1,
+                    x2: pair.x2,
+                    y1: pair.y1,
+                    y2: pair.y2,
+                  },
+                }),
                 tag("radialGradient", {
                   inner: [
                     tag("stop", {
