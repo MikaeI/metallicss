@@ -60,7 +60,6 @@ function rasterify(elem, svg, callback) {
     image = callback ? new Image() : elem.querySelector(":scope > .metal");
 
   if (callback) {
-    document.body.append(image);
     image.onload = function () {
       const canvas = document.createElement("canvas"),
         context = canvas.getContext("2d", { alpha: false });
@@ -69,7 +68,7 @@ function rasterify(elem, svg, callback) {
       canvas.height = 1024;
       context.drawImage(this, 0, 0);
       domUrl.revokeObjectURL(url);
-      // image.remove();
+      image.remove();
       callback(canvas.toDataURL());
       canvas.remove();
     };
