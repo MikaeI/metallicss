@@ -100,20 +100,18 @@ export const metallicss = (elem) => {
         y: width / 2 < radius ? 512 * (x / y) : radius * (1024 / height),
       },
       inverse = depth < 0,
-      rotation = inverse
-        ? parseInt(
-            getComputedStyle(elem).getPropertyValue("--rotation") || "0"
-          ) * -1
-        : getComputedStyle(elem).getPropertyValue("--rotation") || "0",
+      rotation = (
+        inverse
+          ? parseInt(
+              getComputedStyle(elem).getPropertyValue("--rotation") || "0"
+            ) * -1
+          : getComputedStyle(elem).getPropertyValue("--rotation") || "0"
+      )
+        .toString()
+        .trim(),
       angle =
-        {
-          2: -67.5,
-          1: -78.75,
-          0: -90,
-          ["-0"]: -90,
-          ["-1"]: -101.25,
-          ["-2"]: -112.5,
-        }[rotation] || -90,
+        { 2: -67.5, 1: -78.75, ["-1"]: -101.25, ["-2"]: -112.5 }[rotation] ||
+        -90,
       fill =
         metal === "gold"
           ? "rgb(255, 215, 128)"
