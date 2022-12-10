@@ -7,14 +7,14 @@ const base = [
     inner: [
       tag("linearGradient", {
         inner: [
-          tag("stop", { props: { offset: "35%", ["stop-color"]: "#e0e0e0" } }),
-          tag("stop", { props: { offset: "40%", ["stop-color"]: "#ffffff" } }),
-          tag("stop", { props: { offset: "45%", ["stop-color"]: "#c0c0c0" } }),
-          tag("stop", { props: { offset: "49%", ["stop-color"]: "#a0a0a0" } }),
-          tag("stop", { props: { offset: "51%", ["stop-color"]: "#606060" } }),
-          tag("stop", { props: { offset: "60%", ["stop-color"]: "#c0c0c0" } }),
-          tag("stop", { props: { offset: "70%", ["stop-color"]: "#808080" } }),
-          tag("stop", { props: { offset: "100%", ["stop-color"]: "#808080" } }),
+          tag("stop", { props: { offset: "33%", ["stop-color"]: "#e0e0e0" } }),
+          tag("stop", { props: { offset: "38%", ["stop-color"]: "#ffffff" } }),
+          tag("stop", { props: { offset: "43%", ["stop-color"]: "#c0c0c0" } }),
+          tag("stop", { props: { offset: "47%", ["stop-color"]: "#a0a0a0" } }),
+          tag("stop", { props: { offset: "49%", ["stop-color"]: "#606060" } }),
+          tag("stop", { props: { offset: "58%", ["stop-color"]: "#c0c0c0" } }),
+          tag("stop", { props: { offset: "68%", ["stop-color"]: "#808080" } }),
+          tag("stop", { props: { offset: "98%", ["stop-color"]: "#808080" } }),
         ],
         props: { id: "gradient", x1: 0, x2: 0, y1: 0, y2: 1 },
       }),
@@ -60,6 +60,7 @@ function rasterify(elem, svg, callback) {
     image = callback ? new Image() : elem.querySelector(":scope > .metal");
 
   if (callback) {
+    document.body.append(image);
     image.onload = function () {
       const canvas = document.createElement("canvas"),
         context = canvas.getContext("2d", { alpha: false });
@@ -68,7 +69,7 @@ function rasterify(elem, svg, callback) {
       canvas.height = 1024;
       context.drawImage(this, 0, 0);
       domUrl.revokeObjectURL(url);
-      image.remove();
+      // image.remove();
       callback(canvas.toDataURL());
       canvas.remove();
     };
@@ -168,25 +169,55 @@ export const metallicss = (elem) => {
         tag("svg", {
           props: { height: 1024, width: 1024, xmlns },
           inner: [
+            tag("radialGradient", {
+              inner: [
+                tag("stop", {
+                  props: {
+                    offset: "33%",
+                    ["stop-color"]: "#ffc0c0",
+                    ["stop-opacity"]: 1,
+                  },
+                }),
+                tag("stop", {
+                  props: {
+                    offset: "100%",
+                    ["stop-color"]: "#800000",
+                    ["stop-opacity"]: 0,
+                  },
+                }),
+              ],
+              props: { id: "blot" },
+            }),
             tag("rect", {
               props: { fill: "white", height: 1024, width: 1024 },
             }),
             tag("g", {
-              inner: Array.from({ length: 24 })
-                .map((_, index) =>
-                  sheen({
-                    offset: Math.pow(
-                      3,
-                      index % 2 === 0 ? index / 4 : (index - 1) / 4
-                    ),
-                    radii,
-                    stroke: Math.ceil(index / 2) % 2 === 0 ? "red" : "white",
-                    vertical: index % 2 === 0,
-                    x,
-                    y,
-                  })
-                )
-                .reverse(),
+              inner: [
+                ...Array.from({ length: 24 })
+                  .map((_, index) =>
+                    sheen({
+                      offset: Math.pow(
+                        3,
+                        index % 2 === 0 ? index / 4 : (index - 1) / 4
+                      ),
+                      radii,
+                      stroke: Math.ceil(index / 2) % 2 === 0 ? "red" : "white",
+                      vertical: index % 2 === 0,
+                      x,
+                      y,
+                    })
+                  )
+                  .reverse(),
+                tag("rect", {
+                  props: {
+                    fill: "url(#blot)",
+                    height: 512,
+                    width: 2048,
+                    y: 256,
+                    x: -512,
+                  },
+                }),
+              ],
               props: { transform: "scale(0.5) translate(512,512)" },
             }),
           ],
