@@ -105,14 +105,15 @@ export const metallicss = (elem) => {
             getComputedStyle(elem).getPropertyValue("--rotation") || "0"
           ) * -1
         : getComputedStyle(elem).getPropertyValue("--rotation") || "0",
-      angle = {
-        2: -67.5,
-        1: -78.75,
-        0: -90,
-        ["-0"]: -90,
-        ["-1"]: -101.25,
-        ["-2"]: -112.5,
-      }[rotation],
+      angle =
+        {
+          2: -67.5,
+          1: -78.75,
+          0: -90,
+          ["-0"]: -90,
+          ["-1"]: -101.25,
+          ["-2"]: -112.5,
+        }[rotation] || -90,
       fill =
         metal === "gold"
           ? "rgb(255, 215, 128)"
