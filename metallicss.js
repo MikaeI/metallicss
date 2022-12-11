@@ -368,7 +368,7 @@ export const metallicss = (elem) => {
     );
     elem.style.boxShadow = inverse
       ? "inset black 0px 1000px 0px"
-      : "inset black 0px 1000px 0px, #00000030 1px 2px 2px, #00000020 2px 4px 4px";
+      : "inset black 0px 1000px 0px, #00000030 1px 2px 2px, #00000020 2px 4px 4px, #ffffff40 0px 0px 32px";
     elem.style.color = `${
       inverse || (height > 100 && elem.innerText !== "MetalliCSS")
         ? "black"
