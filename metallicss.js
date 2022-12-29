@@ -47,20 +47,6 @@ const serializer = new XMLSerializer(),
       props: { ["color-interpolation"]: "sRGB", cx: 0.6, cy: 0, id: "s" },
     }),
   ],
-  blends = [
-    tag("feBlend", {
-      props: {
-        ...sRGB,
-        in: "color",
-        in2: "SourceGraphic",
-        mode: "color",
-        result: "first",
-      },
-    }),
-    tag("feBlend", {
-      props: { ...sRGB, in: "color", in2: "first", mode: "overlay" },
-    }),
-  ],
   map = tag("feImage", {
     props: {
       ...dims,
@@ -221,7 +207,23 @@ export const metallicss = (elem) => {
                     values: `${rgb[0]} 0 0 0 0 0 ${rgb[1]} 0 0 0 0 0 ${rgb[2]} 0 0 0 0 0 1 0`,
                   },
                 }),
-                ...blends,
+                tag("feBlend", {
+                  props: {
+                    ...sRGB,
+                    in: "color",
+                    in2: "SourceGraphic",
+                    mode: "color",
+                    result: "first",
+                  },
+                }),
+                tag("feBlend", {
+                  props: {
+                    ...sRGB,
+                    in: "color",
+                    in2: "first",
+                    mode: "overlay",
+                  },
+                }),
               ],
               props: { id: `lustre_${fill.replace(/ /g, "")}` },
             }),
