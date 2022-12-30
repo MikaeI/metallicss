@@ -34,14 +34,14 @@ const serializer = new XMLSerializer(),
   gradients = [
     tag("radialGradient", {
       inner: [
-        tag("stop", { props: { ["stop-color"]: "#cfdfff", offset: 0 } }),
+        tag("stop", { props: { ["stop-color"]: "#d8dfef", offset: 0 } }),
         tag("stop", { props: { ["stop-color"]: "#808080", offset: 1 } }),
       ],
       props: { ["color-interpolation"]: "sRGB", cx: 0.6, cy: 1, id: "n" },
     }),
     tag("radialGradient", {
       inner: [
-        tag("stop", { props: { ["stop-color"]: "#404040", offset: 0 } }),
+        tag("stop", { props: { ["stop-color"]: "#585048", offset: 0 } }),
         tag("stop", { props: { ["stop-color"]: "white", offset: 1 } }),
       ],
       props: { ["color-interpolation"]: "sRGB", cx: 0.6, cy: 0, id: "s" },
@@ -154,9 +154,9 @@ export const metallicss = (elem) => {
       inverse = rawDepth < 0,
       fill =
         metal === "gold"
-          ? "rgb(255, 223, 128)"
+          ? "rgb(255, 248, 0)"
           : metal === "copper"
-          ? "rgb(187, 128, 119)"
+          ? "rgb(255, 128, 0)"
           : metal === "silver"
           ? "rgb(221, 231, 247)"
           : metal === "lead"
@@ -212,16 +212,34 @@ export const metallicss = (elem) => {
                     ...sRGB,
                     in: "color",
                     in2: "SourceGraphic",
-                    mode: "color",
+                    mode: "screen",
                     result: "first",
                   },
                 }),
                 tag("feBlend", {
                   props: {
                     ...sRGB,
-                    in: "color",
+                    in: "SourceGraphic",
                     in2: "first",
                     mode: "overlay",
+                    result: "second",
+                  },
+                }),
+                tag("feBlend", {
+                  props: {
+                    ...sRGB,
+                    in: "SourceGraphic",
+                    in2: "second",
+                    mode: "color-burn",
+                    result: "third",
+                  },
+                }),
+                tag("feColorMatrix", {
+                  props: {
+                    ...sRGB,
+                    result: "fourth",
+                    type: "saturate",
+                    values: "1.5",
                   },
                 }),
               ],
@@ -334,20 +352,25 @@ export const metallicss = (elem) => {
     elem.style.boxShadow = inverse
       ? ""
       : "#00000030 1px 2px 2px, #00000020 2px 4px 4px";
-    elem.style.color = inverse ? fill : "white";
+    elem.style.color = "white";
     elem.style.overflow = "hidden";
     elem.style.textRendering = "geometricPrecision";
     elem.style.transform = "translateZ(0)";
-    Object.assign(elem.querySelector(":scope > .metal").style, {
-      filter: `url("#lustre_${fill.replace(/ /g, "")}")`,
-      height: "102%",
-      left: "-1%",
-      maxWidth: "102%",
-      position: "absolute",
-      top: "-1%",
-      width: "102%",
-      zIndex: -1,
-    });
+    elem.querySelector(":scope > .metal").style.filter = "";
+    setTimeout(
+      () =>
+        Object.assign(elem.querySelector(":scope > .metal").style, {
+          filter: `url("#lustre_${fill.replace(/ /g, "")}")`,
+          height: "102%",
+          left: "-1%",
+          maxWidth: "102%",
+          position: "absolute",
+          top: "-1%",
+          width: "102%",
+          zIndex: -1,
+        }),
+      0
+    );
   },
   traverse = () =>
     Array.from(document.querySelectorAll(".metallicss")).forEach(metallicss);
