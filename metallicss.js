@@ -1,7 +1,6 @@
 const serializer = new XMLSerializer(),
   xmlns = "http://www.w3.org/2000/svg",
   domUrl = window.URL || window.webkitURL || window,
-  isFirefox = navigator.userAgent.toLowerCase().indexOf("firefox") > -1,
   dims = { height: 2048, width: 2048 },
   sRGB = { ["color-interpolation-filters"]: "sRGB" },
   inner = [
@@ -16,7 +15,8 @@ const serializer = new XMLSerializer(),
       tag("feTurbulence", {
         props: {
           ...sRGB,
-          baseFrequency: "0.01 0.01",
+          baseFrequency: "0.005 0.01",
+          seed: Math.floor(Math.random() * 100),
           type: "fractalNoise",
         },
       }),
@@ -173,21 +173,19 @@ export const metallicss = (elem) => {
       image = elem.querySelector(":scope > .metal") || new Image();
     let tempImage, url;
 
-    if (isFirefox) {
-      tempImage = new Image();
-      tempImage.onload = function () {
-        const canvas = document.createElement("canvas"),
-          context = canvas.getContext("2d", { alpha: false });
+    tempImage = new Image();
+    tempImage.onload = function () {
+      const canvas = document.createElement("canvas"),
+        context = canvas.getContext("2d", { alpha: false });
 
-        canvas.width = 512;
-        canvas.height = 512;
-        context.drawImage(this, 0, 0);
-        domUrl.revokeObjectURL(url);
-        tempImage.remove();
-        image.src = canvas.toDataURL();
-        canvas.remove();
-      };
-    }
+      canvas.height = y * 2;
+      canvas.width = x * 2;
+      context.drawImage(this, 0, 0);
+      domUrl.revokeObjectURL(url);
+      tempImage.remove();
+      image.src = canvas.toDataURL();
+      canvas.remove();
+    };
     if (x === 0 || y === 0) return;
     if (elem.querySelector(":scope > .metal") === null) {
       image.className = "metal";
@@ -286,8 +284,12 @@ export const metallicss = (elem) => {
                                   props: {
                                     fill: "rgb(1, 0, 1)",
                                     filter: "url(#blur)",
-                                    height: `${25 - absRawDepth / 2}%`,
-                                    width: `${25 - absRawDepth / 2}%`,
+                                    height: `${
+                                      25 - (absRawDepth / 3) * ((x + y) / 2 / y)
+                                    }%`,
+                                    width: `${
+                                      25 - (absRawDepth / 3) * ((x + y) / 2 / x)
+                                    }%`,
                                     rx:
                                       parseInt(
                                         (y / 2 < radius
@@ -302,8 +304,14 @@ export const metallicss = (elem) => {
                                           : radius * (2048 / y)) / 4
                                       ) -
                                       absRawDepth * 4,
-                                    x: `${37.5 + absRawDepth / 4}%`,
-                                    y: `${37.5 + absRawDepth / 4}%`,
+                                    x: `${
+                                      37.5 +
+                                      (absRawDepth / 6) * ((x + y) / 2 / x)
+                                    }%`,
+                                    y: `${
+                                      37.5 +
+                                      (absRawDepth / 6) * ((x + y) / 2 / y)
+                                    }%`,
                                   },
                                 }),
                               ],
@@ -331,11 +339,19 @@ export const metallicss = (elem) => {
                   props: { id: "warp", x: 0, y: 0 },
                 }),
                 perlin,
-                tag("g", { inner, props: { filter: "url(#warp)" } }),
+                tag("g", {
+                  inner: inverse
+                    ? [
+                        ...inner,
+                        tag("rect", { props: { ...dims, fill: "#30303030" } }),
+                      ]
+                    : inner,
+                  props: { filter: "url(#warp)" },
+                }),
               ],
               props: {
-                height: 512,
-                width: 512,
+                height: y * 2,
+                width: x * 2,
                 preserveAspectRatio: "none",
                 style: `transform: scale(1, ${inverse ? "-" : ""}1)`,
                 viewBox: "768 768 512 512",
@@ -347,8 +363,7 @@ export const metallicss = (elem) => {
         { type: "image/svg+xml;charset=utf-8" }
       )
     );
-    if (isFirefox) tempImage.src = url;
-    else image.src = url;
+    tempImage.src = url;
     elem.style.boxShadow = inverse
       ? ""
       : "#00000030 1px 2px 2px, #00000020 2px 4px 4px";
@@ -361,12 +376,12 @@ export const metallicss = (elem) => {
       () =>
         Object.assign(elem.querySelector(":scope > .metal").style, {
           filter: `url("#lustre_${fill.replace(/ /g, "")}")`,
-          height: "102%",
-          left: "-1%",
-          maxWidth: "102%",
+          height: "100%",
+          left: "0",
+          maxWidth: "100%",
           position: "absolute",
-          top: "-1%",
-          width: "102%",
+          top: "0",
+          width: "100%",
           zIndex: -1,
         }),
       0
