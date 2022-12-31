@@ -10,27 +10,6 @@ const serializer = new XMLSerializer(),
     }),
     tag("rect", { props: { ...dims, filter: "url(#perlin)" } }),
   ],
-  perlin = tag("filter", {
-    inner: [
-      tag("feTurbulence", {
-        props: {
-          ...sRGB,
-          baseFrequency: "0.005 0.01",
-          seed: Math.floor(Math.random() * 100),
-          type: "fractalNoise",
-        },
-      }),
-      tag("feColorMatrix", {
-        props: {
-          ...sRGB,
-          result: "desaturated",
-          type: "matrix",
-          values: `.33 .33 .33 0 0 .33 .33 .33 0 0 .33 .33 .33 0 0 0 0 0 1 0`,
-        },
-      }),
-    ],
-    props: { id: "perlin" },
-  }),
   gradients = [
     tag("radialGradient", {
       inner: [
@@ -338,7 +317,27 @@ export const metallicss = (elem) => {
                   ],
                   props: { id: "warp", x: 0, y: 0 },
                 }),
-                perlin,
+                tag("filter", {
+                  inner: [
+                    tag("feTurbulence", {
+                      props: {
+                        ...sRGB,
+                        baseFrequency: "0.005 0.01",
+                        seed: Math.floor(Math.random() * 100),
+                        type: "fractalNoise",
+                      },
+                    }),
+                    tag("feColorMatrix", {
+                      props: {
+                        ...sRGB,
+                        result: "desaturated",
+                        type: "matrix",
+                        values: `.33 .33 .33 0 0 .33 .33 .33 0 0 .33 .33 .33 0 0 0 0 0 1 0`,
+                      },
+                    }),
+                  ],
+                  props: { id: "perlin" },
+                }),
                 tag("g", {
                   inner: inverse
                     ? [
