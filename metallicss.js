@@ -3,6 +3,7 @@ const serializer = new XMLSerializer(),
   domUrl = window.URL || window.webkitURL || window,
   dims = { height: 2048, width: 2048 },
   sRGB = { ["color-interpolation-filters"]: "sRGB" },
+  randomSeed = Math.floor(Math.random() * 100),
   inner = [
     tag("rect", { props: { fill: "url(#n)", height: 1200, width: 2048 } }),
     tag("rect", {
@@ -10,27 +11,6 @@ const serializer = new XMLSerializer(),
     }),
     tag("rect", { props: { ...dims, filter: "url(#perlin)" } }),
   ],
-  perlin = tag("filter", {
-    inner: [
-      tag("feTurbulence", {
-        props: {
-          ...sRGB,
-          baseFrequency: "0.005 0.01",
-          seed: Math.floor(Math.random() * 100),
-          type: "fractalNoise",
-        },
-      }),
-      tag("feColorMatrix", {
-        props: {
-          ...sRGB,
-          result: "desaturated",
-          type: "matrix",
-          values: `.33 .33 .33 0 0 .33 .33 .33 0 0 .33 .33 .33 0 0 0 0 0 1 0`,
-        },
-      }),
-    ],
-    props: { id: "perlin" },
-  }),
   gradients = [
     tag("radialGradient", {
       inner: [
@@ -144,6 +124,7 @@ export const metallicss = (elem) => {
     const { offsetHeight: y, offsetWidth: x } = elem,
       { backgroundColor: background, borderRadius } = getComputedStyle(elem),
       depth = getComputedStyle(elem).getPropertyValue("--convexity"),
+      seed = getComputedStyle(elem).getPropertyValue("--seed") || randomSeed,
       metal = getComputedStyle(elem)
         .getPropertyValue("--metal")
         .replace(/ /g, ""),
@@ -178,8 +159,8 @@ export const metallicss = (elem) => {
       const canvas = document.createElement("canvas"),
         context = canvas.getContext("2d", { alpha: false });
 
-      canvas.height = y * 2;
-      canvas.width = x * 2;
+      canvas.height = y * 2 > 1024 ? 1024 : y * 2;
+      canvas.width = x * 2 > 1024 ? 1024 : x * 2;
       context.drawImage(this, 0, 0);
       domUrl.revokeObjectURL(url);
       tempImage.remove();
@@ -338,7 +319,27 @@ export const metallicss = (elem) => {
                   ],
                   props: { id: "warp", x: 0, y: 0 },
                 }),
-                perlin,
+                tag("filter", {
+                  inner: [
+                    tag("feTurbulence", {
+                      props: {
+                        ...sRGB,
+                        baseFrequency: "0.005 0.01",
+                        seed,
+                        type: "fractalNoise",
+                      },
+                    }),
+                    tag("feColorMatrix", {
+                      props: {
+                        ...sRGB,
+                        result: "desaturated",
+                        type: "matrix",
+                        values: `.33 .33 .33 0 0 .33 .33 .33 0 0 .33 .33 .33 0 0 0 0 0 1 0`,
+                      },
+                    }),
+                  ],
+                  props: { id: "perlin" },
+                }),
                 tag("g", {
                   inner: inverse
                     ? [
@@ -350,8 +351,8 @@ export const metallicss = (elem) => {
                 }),
               ],
               props: {
-                height: y * 2,
-                width: x * 2,
+                height: y * 2 > 1024 ? 1024 : y * 2,
+                width: x * 2 > 1024 ? 1024 : x * 2,
                 preserveAspectRatio: "none",
                 style: `transform: scale(1, ${inverse ? "-" : ""}1)`,
                 viewBox: "768 768 512 512",
