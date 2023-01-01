@@ -152,8 +152,18 @@ export const metallicss = (elem) => {
         .split(",")
         .map((str) => (parseInt(str) / 256).toFixed(3)),
       image = elem.querySelector(":scope > .metal") || new Image();
-    let tempImage, url;
+    let tempImage,
+      url,
+      rx =
+        parseInt((y / 2 < radius ? 1024 * (y / x) : radius * (2048 / x)) / 4) -
+        absRawDepth * 4,
+      ry =
+        parseInt((x / 2 < radius ? 1024 * (x / y) : radius * (2048 / y)) / 4) -
+        absRawDepth * 4;
 
+    if (x === 0 || y === 0) return;
+    if (rx < 0) rx = 0;
+    if (ry < 0) ry = 0;
     tempImage = new Image();
     tempImage.onload = function () {
       const canvas = document.createElement("canvas"),
@@ -163,11 +173,12 @@ export const metallicss = (elem) => {
       canvas.width = x * 2 > 1024 ? 1024 : x * 2;
       context.drawImage(this, 0, 0);
       domUrl.revokeObjectURL(url);
-      tempImage.remove();
       image.src = canvas.toDataURL();
-      canvas.remove();
+      setTimeout(() => {
+        tempImage.remove();
+        canvas.remove();
+      }, 1000);
     };
-    if (x === 0 || y === 0) return;
     if (elem.querySelector(":scope > .metal") === null) {
       image.className = "metal";
       elem.append(image);
@@ -189,17 +200,17 @@ export const metallicss = (elem) => {
                 tag("feBlend", {
                   props: {
                     ...sRGB,
-                    in: "color",
-                    in2: "SourceGraphic",
-                    mode: "screen",
+                    in: "SourceGraphic",
+                    in2: "color",
+                    mode: "overlay",
                     result: "first",
                   },
                 }),
                 tag("feBlend", {
                   props: {
                     ...sRGB,
-                    in: "SourceGraphic",
-                    in2: "first",
+                    in: "first",
+                    in2: "SourceGraphic",
                     mode: "overlay",
                     result: "second",
                   },
@@ -207,18 +218,10 @@ export const metallicss = (elem) => {
                 tag("feBlend", {
                   props: {
                     ...sRGB,
-                    in: "SourceGraphic",
-                    in2: "second",
-                    mode: "color-burn",
+                    in: "second",
+                    in2: "SourceGraphic",
+                    mode: "overlay",
                     result: "third",
-                  },
-                }),
-                tag("feColorMatrix", {
-                  props: {
-                    ...sRGB,
-                    result: "fourth",
-                    type: "saturate",
-                    values: "1.5",
                   },
                 }),
               ],
@@ -271,20 +274,8 @@ export const metallicss = (elem) => {
                                     width: `${
                                       25 - (absRawDepth / 3) * ((x + y) / 2 / x)
                                     }%`,
-                                    rx:
-                                      parseInt(
-                                        (y / 2 < radius
-                                          ? 1024 * (y / x)
-                                          : radius * (2048 / x)) / 4
-                                      ) -
-                                      absRawDepth * 4,
-                                    ry:
-                                      parseInt(
-                                        (x / 2 < radius
-                                          ? 1024 * (x / y)
-                                          : radius * (2048 / y)) / 4
-                                      ) -
-                                      absRawDepth * 4,
+                                    rx,
+                                    ry,
                                     x: `${
                                       37.5 +
                                       (absRawDepth / 6) * ((x + y) / 2 / x)
