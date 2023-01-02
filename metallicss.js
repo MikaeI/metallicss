@@ -174,10 +174,8 @@ export const metallicss = (elem) => {
       context.drawImage(this, 0, 0);
       domUrl.revokeObjectURL(url);
       image.src = canvas.toDataURL();
-      setTimeout(() => {
-        tempImage.remove();
-        canvas.remove();
-      }, 1000);
+      tempImage.remove();
+      canvas.remove();
     };
     if (elem.querySelector(":scope > .metal") === null) {
       image.className = "metal";
@@ -321,12 +319,7 @@ export const metallicss = (elem) => {
                       },
                     }),
                     tag("feColorMatrix", {
-                      props: {
-                        ...sRGB,
-                        result: "desaturated",
-                        type: "matrix",
-                        values: `.33 .33 .33 0 0 .33 .33 .33 0 0 .33 .33 .33 0 0 0 0 0 1 0`,
-                      },
+                      props: { ...sRGB, type: "saturate", values: "0.2" },
                     }),
                   ],
                   props: { id: "perlin" },
@@ -368,12 +361,12 @@ export const metallicss = (elem) => {
       () =>
         Object.assign(elem.querySelector(":scope > .metal").style, {
           filter: `url("#lustre_${fill.replace(/ /g, "")}")`,
-          height: "100%",
-          left: "0",
-          maxWidth: "100%",
+          height: "102%",
+          left: "-1%",
+          maxWidth: "102%",
           position: "absolute",
-          top: "0",
-          width: "100%",
+          top: "-1%",
+          width: "102%",
           zIndex: -1,
         }),
       0
