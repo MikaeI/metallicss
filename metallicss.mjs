@@ -4,24 +4,17 @@ const serializer = new XMLSerializer(),
   dims = { height: 2048, width: 2048 },
   sRGB = { ["color-interpolation-filters"]: "sRGB" },
   randomSeed = Math.floor(Math.random() * 100),
-  inner = [
-    tag("rect", { props: { fill: "url(#n)", height: 1200, width: 2048 } }),
-    tag("rect", {
-      props: { fill: "url(#s)", height: 848, width: 2048, y: 1200 },
-    }),
-    tag("rect", { props: { ...dims, filter: "url(#perlin)" } }),
-  ],
   gradients = [
     tag("radialGradient", {
       inner: [
-        tag("stop", { props: { ["stop-color"]: "#d8dfef", offset: 0 } }),
-        tag("stop", { props: { ["stop-color"]: "#808080", offset: 1 } }),
+        tag("stop", { props: { ["stop-color"]: "#c0c0d0", offset: 0 } }),
+        tag("stop", { props: { ["stop-color"]: "#606070", offset: 1 } }),
       ],
       props: { ["color-interpolation"]: "sRGB", cx: 0.6, cy: 1, id: "n" },
     }),
     tag("radialGradient", {
       inner: [
-        tag("stop", { props: { ["stop-color"]: "#585048", offset: 0 } }),
+        tag("stop", { props: { ["stop-color"]: "#404040", offset: 0 } }),
         tag("stop", { props: { ["stop-color"]: "white", offset: 1 } }),
       ],
       props: { ["color-interpolation"]: "sRGB", cx: 0.6, cy: 0, id: "s" },
@@ -135,23 +128,32 @@ export const metallicss = (elem) => {
       inverse = rawDepth < 0,
       fill =
         metal === "gold"
-          ? "rgb(255, 248, 0)"
+          ? "rgb(255, 255, 0)"
           : metal === "copper"
           ? "rgb(255, 128, 0)"
           : metal === "silver"
-          ? "rgb(221, 231, 247)"
+          ? "rgb(255, 255, 255)"
           : metal === "lead"
-          ? "rgb(55, 55, 64)"
+          ? "rgb(0, 0, 0)"
           : background === "rgba(0, 0, 0, 0)"
           ? "rgb(128, 128, 128)"
           : background,
-      rgb = fill
-        .replace("rgb(", "")
-        .replace(")", "")
-        .replace(/ /g, "")
-        .split(",")
-        .map((str) => (parseInt(str) / 256).toFixed(3)),
-      image = elem.querySelector(":scope > .metal") || new Image();
+      image = elem.querySelector(":scope > .metal") || new Image(),
+      inner = [
+        tag("rect", { props: { fill: "url(#n)", height: 1200, width: 2048 } }),
+        tag("rect", {
+          props: { fill: "url(#s)", height: 848, width: 2048, y: 1200 },
+        }),
+        tag("rect", {
+          props: {
+            ...dims,
+            fill,
+            style: "mix-blend-mode: color",
+            opacity: 0.25,
+          },
+        }),
+        tag("rect", { props: { ...dims, filter: "url(#perlin)" } }),
+      ];
     let tempImage,
       url,
       rx =
@@ -183,58 +185,6 @@ export const metallicss = (elem) => {
       image.className = "metal";
       elem.append(image);
     }
-    document.getElementById(`for_lustre_${fill.replace(/ /g, "")}`) === null &&
-      document.body.append(
-        tag("svg", {
-          inner: [
-            tag("filter", {
-              inner: [
-                tag("feColorMatrix", {
-                  props: {
-                    ...sRGB,
-                    result: "color",
-                    type: "matrix",
-                    values: `${rgb[0]} 0 0 0 0 0 ${rgb[1]} 0 0 0 0 0 ${rgb[2]} 0 0 0 0 0 1 0`,
-                  },
-                }),
-                tag("feBlend", {
-                  props: {
-                    ...sRGB,
-                    in: "SourceGraphic",
-                    in2: "color",
-                    mode: "overlay",
-                    result: "first",
-                  },
-                }),
-                tag("feBlend", {
-                  props: {
-                    ...sRGB,
-                    in: "first",
-                    in2: "SourceGraphic",
-                    mode: "overlay",
-                    result: "second",
-                  },
-                }),
-                tag("feBlend", {
-                  props: {
-                    ...sRGB,
-                    in: "second",
-                    in2: "SourceGraphic",
-                    mode: "overlay",
-                    result: "third",
-                  },
-                }),
-              ],
-              props: { id: `lustre_${fill.replace(/ /g, "")}` },
-            }),
-          ],
-          props: {
-            height: 0,
-            width: 0,
-            id: `for_lustre_${fill.replace(/ /g, "")}`,
-          },
-        })
-      );
     url = domUrl.createObjectURL(
       new Blob(
         [
@@ -307,6 +257,29 @@ export const metallicss = (elem) => {
                         yChannelSelector: "B",
                       },
                     }),
+                    tag("feComponentTransfer", {
+                      inner: "RGB".split("").map((channel) =>
+                        tag(`feFunc${channel}`, {
+                          props: {
+                            type: "linear",
+                            slope: "2",
+                            intercept: -0.5,
+                          },
+                        })
+                      ),
+                      props: { ...sRGB },
+                    }),
+                    tag("feComponentTransfer", {
+                      inner: "RGB".split("").map((channel) =>
+                        tag(`feFunc${channel}`, {
+                          props: { type: "linear", slope: 1.1 },
+                        })
+                      ),
+                      props: { ...sRGB },
+                    }),
+                    tag("feColorMatrix", {
+                      props: { ...sRGB, type: "saturate", values: 1.5 },
+                    }),
                   ],
                   props: { id: "warp", x: 0, y: 0 },
                 }),
@@ -321,7 +294,7 @@ export const metallicss = (elem) => {
                       },
                     }),
                     tag("feColorMatrix", {
-                      props: { ...sRGB, type: "saturate", values: "0.2" },
+                      props: { ...sRGB, type: "saturate", values: 0.1 },
                     }),
                   ],
                   props: { id: "perlin" },
@@ -334,6 +307,14 @@ export const metallicss = (elem) => {
                       ]
                     : inner,
                   props: { filter: "url(#warp)" },
+                }),
+                tag("rect", {
+                  props: {
+                    ...dims,
+                    fill,
+                    style: "mix-blend-mode: soft-light",
+                    opacity: 0.25,
+                  },
                 }),
               ],
               props: {
@@ -358,21 +339,15 @@ export const metallicss = (elem) => {
     elem.style.overflow = "hidden";
     elem.style.textRendering = "geometricPrecision";
     elem.style.transform = "translateZ(0)";
-    elem.querySelector(":scope > .metal").style.filter = "";
-    setTimeout(
-      () =>
-        Object.assign(elem.querySelector(":scope > .metal").style, {
-          filter: `url("#lustre_${fill.replace(/ /g, "")}")`,
-          height: "102%",
-          left: "-1%",
-          maxWidth: "102%",
-          position: "absolute",
-          top: "-1%",
-          width: "102%",
-          zIndex: -1,
-        }),
-      0
-    );
+    Object.assign(elem.querySelector(":scope > .metal").style, {
+      height: "100%",
+      left: "0",
+      maxWidth: "100%",
+      position: "absolute",
+      top: "0",
+      width: "100%",
+      zIndex: -1,
+    });
   },
   traverse = () =>
     Array.from(document.querySelectorAll(".metallicss")).forEach(metallicss);
