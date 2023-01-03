@@ -1,5 +1,7 @@
 # Versatile metallic finish for CSS
 
+<img src="https://metallicss.com/some.png" alt="MetalliCSS logo" width="728" />
+
 MetalliCSS is a tiny, dependency-free JavaScript library that makes your CSS literally shine.
 
 Using the library is as simple as adding the class `metallicss`, and using CSS properties for configuration (try it out [here](https://www.metallicss.com)).
