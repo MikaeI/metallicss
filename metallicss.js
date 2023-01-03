@@ -171,11 +171,13 @@ export const metallicss = (elem) => {
 
       canvas.height = y * 2 > 1024 ? 1024 : y * 2;
       canvas.width = x * 2 > 1024 ? 1024 : x * 2;
-      context.drawImage(this, 0, 0);
-      domUrl.revokeObjectURL(url);
-      image.src = canvas.toDataURL();
-      tempImage.remove();
-      canvas.remove();
+      setTimeout(() => {
+        context.drawImage(this, 0, 0);
+        domUrl.revokeObjectURL(url);
+        image.src = canvas.toDataURL();
+        tempImage.remove();
+        canvas.remove();
+      }, 0);
     };
     if (elem.querySelector(":scope > .metal") === null) {
       image.className = "metal";
