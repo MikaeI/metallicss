@@ -138,7 +138,22 @@ export const metallicss = (elem) => {
           : background === "rgba(0, 0, 0, 0)"
           ? "rgb(128, 128, 128)"
           : background,
-      image = elem.querySelector(":scope > .metal") || new Image();
+      image = elem.querySelector(":scope > .metal") || new Image(),
+      inner = [
+        tag("rect", { props: { fill: "url(#n)", height: 1200, width: 2048 } }),
+        tag("rect", {
+          props: { fill: "url(#s)", height: 848, width: 2048, y: 1200 },
+        }),
+        tag("rect", {
+          props: {
+            ...dims,
+            fill,
+            style: "mix-blend-mode: color",
+            opacity: 0.25,
+          },
+        }),
+        tag("rect", { props: { ...dims, filter: "url(#perlin)" } }),
+      ];
     let tempImage,
       url,
       rx =
@@ -146,27 +161,11 @@ export const metallicss = (elem) => {
         absRawDepth * 4,
       ry =
         parseInt((x / 2 < radius ? 1024 * (x / y) : radius * (2048 / y)) / 4) -
-        absRawDepth * 4,
-      inner;
+        absRawDepth * 4;
 
     if (x === 0 || y === 0) return;
     if (rx < 0) rx = 0;
     if (ry < 0) ry = 0;
-    inner = [
-      tag("rect", { props: { fill: "url(#n)", height: 1200, width: 2048 } }),
-      tag("rect", {
-        props: { fill: "url(#s)", height: 848, width: 2048, y: 1200 },
-      }),
-      tag("rect", {
-        props: {
-          ...dims,
-          fill,
-          style: "mix-blend-mode: color",
-          opacity: 0.25,
-        },
-      }),
-      tag("rect", { props: { ...dims, filter: "url(#perlin)" } }),
-    ];
     tempImage = new Image();
     tempImage.onload = function () {
       const canvas = document.createElement("canvas"),
@@ -353,7 +352,6 @@ export const metallicss = (elem) => {
   traverse = () =>
     Array.from(document.querySelectorAll(".metallicss")).forEach(metallicss);
 
-if (document.readyState !== "loading") traverse();
-else document.addEventListener("DOMContentLoaded", traverse);
+window.addEventListener("load", traverse);
 
 export default metallicss;
