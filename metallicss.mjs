@@ -1,6 +1,7 @@
 const serializer = new XMLSerializer(),
   xmlns = "http://www.w3.org/2000/svg",
   domUrl = window.URL || window.webkitURL || window,
+  isFirefox = window.navigator.userAgent.indexOf("Firefox") > -1,
   dims = { height: 2048, width: 2048 },
   sRGB = { ["color-interpolation-filters"]: "sRGB" },
   randomSeed = Math.floor(Math.random() * 100),
@@ -138,7 +139,10 @@ export const metallicss = (elem) => {
           : background === "rgba(0, 0, 0, 0)"
           ? "rgb(128, 128, 128)"
           : background,
-      image = elem.querySelector(":scope > .metal") || new Image(),
+      canvas =
+        elem.querySelector(":scope > .metal") ||
+        document.createElement("canvas"),
+      context = canvas.getContext("2d", { alpha: false }),
       inner = [
         tag("rect", { props: { fill: "url(#n)", height: 1200, width: 2048 } }),
         tag("rect", {
@@ -168,22 +172,17 @@ export const metallicss = (elem) => {
     if (ry < 0) ry = 0;
     tempImage = new Image();
     tempImage.onload = function () {
-      const canvas = document.createElement("canvas"),
-        context = canvas.getContext("2d", { alpha: false });
-
-      canvas.height = y * 2 > 1024 ? 1024 : y * 2;
-      canvas.width = x * 2 > 1024 ? 1024 : x * 2;
+      canvas.height = isFirefox ? 512 : y * 2 > 1024 ? 1024 : y * 2;
+      canvas.width = isFirefox ? 512 : x * 2 > 1024 ? 1024 : x * 2;
       setTimeout(() => {
         context.drawImage(this, 0, 0);
         domUrl.revokeObjectURL(url);
-        image.src = canvas.toDataURL();
         tempImage.remove();
-        canvas.remove();
       }, 0);
     };
     if (elem.querySelector(":scope > .metal") === null) {
-      image.className = "metal";
-      elem.append(image);
+      canvas.className = "metal";
+      elem.append(canvas);
     }
     url = domUrl.createObjectURL(
       new Blob(
@@ -267,7 +266,7 @@ export const metallicss = (elem) => {
                           },
                         })
                       ),
-                      props: { ...sRGB },
+                      props: sRGB,
                     }),
                     tag("feComponentTransfer", {
                       inner: "RGB".split("").map((channel) =>
@@ -275,7 +274,7 @@ export const metallicss = (elem) => {
                           props: { type: "linear", slope: 1.1 },
                         })
                       ),
-                      props: { ...sRGB },
+                      props: sRGB,
                     }),
                     tag("feColorMatrix", {
                       props: { ...sRGB, type: "saturate", values: 1.5 },
@@ -318,8 +317,8 @@ export const metallicss = (elem) => {
                 }),
               ],
               props: {
-                height: y * 2 > 1024 ? 1024 : y * 2,
-                width: x * 2 > 1024 ? 1024 : x * 2,
+                height: isFirefox ? 512 : y * 2 > 1024 ? 1024 : y * 2,
+                width: isFirefox ? 512 : x * 2 > 1024 ? 1024 : x * 2,
                 preserveAspectRatio: "none",
                 style: `transform: scale(1, ${inverse ? "-" : ""}1)`,
                 viewBox: "768 768 512 512",
