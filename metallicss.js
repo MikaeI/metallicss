@@ -1,3 +1,12 @@
+function tag(name, { inner, props }) {
+  const elem = document.createElementNS("http://www.w3.org/2000/svg", name);
+
+  props && Object.entries(props).forEach((prop) => elem.setAttribute(...prop));
+  inner?.forEach((innerElem) => elem.append(innerElem));
+
+  return elem;
+}
+
 const serializer = new XMLSerializer(),
   xmlns = "http://www.w3.org/2000/svg",
   domUrl = window.URL || window.webkitURL || window,
@@ -103,18 +112,8 @@ const serializer = new XMLSerializer(),
       preserveAspectRatio: "none",
       result: "map",
     },
-  });
-
-function tag(name, { inner, props }) {
-  const elem = document.createElementNS("http://www.w3.org/2000/svg", name);
-
-  props && Object.entries(props).forEach((prop) => elem.setAttribute(...prop));
-  inner?.forEach((innerElem) => elem.append(innerElem));
-
-  return elem;
-}
-
-export const metallicss = (elem) => {
+  }),
+  metallicss = (elem) => {
     const { offsetHeight: y, offsetWidth: x } = elem,
       { backgroundColor: background, borderRadius } = getComputedStyle(elem),
       depth = getComputedStyle(elem).getPropertyValue("--convexity"),
@@ -347,14 +346,42 @@ export const metallicss = (elem) => {
       width: "100%",
       zIndex: -1,
     });
-  },
-  traverse = () =>
-    Array.from(document.querySelectorAll(".metallicss")).forEach(
-      window.metallicss
-    );
+  };
 
-window.metallicss = metallicss;
-window.metallicssTraverse = traverse;
-window.addEventListener("load", traverse);
+((fn) => {
+  if (document.readyState !== "loading") {
+    fn();
+  } else {
+    document.addEventListener("DOMContentLoaded", fn);
+  }
+})(() =>
+  Array.from(document.querySelectorAll(".metallicss")).forEach((elem) => {
+    const observer = new MutationObserver((mutations) =>
+        mutations.forEach((mutation) => {
+          if (mutation.attributeName === "style") {
+            const style = mutation.target.style,
+              convexity = style.getPropertyValue("--convexity"),
+              metal = style.getPropertyValue("--metal"),
+              seed = style.getPropertyValue("--seed"),
+              borderRadius = style.borderRadius;
 
-export default metallicss;
+            (convexity !== mutation.oldValue.getPropertyValue("--convexity") ||
+              metal !== mutation.oldValue.getPropertyValue("--metal") ||
+              seed !== mutation.oldValue.getPropertyValue("--seed") ||
+              borderRadius !== mutation.oldValue.borderRadius) &&
+              metallicss(elem);
+          }
+        })
+      ),
+      dimensionsObserver = new ResizeObserver((entries) =>
+        entries.forEach(() => metallicss(elem))
+      );
+
+    observer.observe(elem, {
+      attributes: true,
+      attributeFilter: ["style"],
+      attributeOldValue: true,
+    });
+    dimensionsObserver.observe(elem);
+  })
+);
