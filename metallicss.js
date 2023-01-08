@@ -363,13 +363,18 @@ const serializer = new XMLSerializer(),
               convexity = style.getPropertyValue("--convexity"),
               metal = style.getPropertyValue("--metal"),
               seed = style.getPropertyValue("--seed"),
-              borderRadius = style.borderRadius;
+              borderRadius = style.borderRadius,
+              oldStyle = mutation.oldValue,
+              oldConvexity = oldStyle?.match(/--convexity:([^;]*)/)[1],
+              oldMetal = oldStyle?.match(/--metal:([^;]*)/)[1],
+              oldSeed = oldStyle?.match(/--seed:([^;]*)/)[1],
+              oldBorderRadius = oldStyle?.match(/border-radius:([^;]*)/)[1];
 
             (mutation.oldValue === null ||
-              convexity !== mutation.oldValue.getPropertyValue("--convexity") ||
-              metal !== mutation.oldValue.getPropertyValue("--metal") ||
-              seed !== mutation.oldValue.getPropertyValue("--seed") ||
-              borderRadius !== mutation.oldValue.borderRadius) &&
+              convexity !== oldConvexity ||
+              metal !== oldMetal ||
+              seed !== oldSeed ||
+              borderRadius !== oldBorderRadius) &&
               metallicss(elem);
           }
         })
