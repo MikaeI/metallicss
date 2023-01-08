@@ -365,10 +365,10 @@ const serializer = new XMLSerializer(),
               seed = style.getPropertyValue("--seed"),
               borderRadius = style.borderRadius,
               oldStyle = mutation.oldValue,
-              oldConvexity = oldStyle?.match(/--convexity:([^;]*)/)[1],
-              oldMetal = oldStyle?.match(/--metal:([^;]*)/)[1],
-              oldSeed = oldStyle?.match(/--seed:([^;]*)/)[1],
-              oldBorderRadius = oldStyle?.match(/border-radius:([^;]*)/)[1];
+              oldConvexity = oldStyle?.match(/--convexity:([^;]*)/)?.[1],
+              oldMetal = oldStyle?.match(/--metal:([^;]*)/)?.[1],
+              oldSeed = oldStyle?.match(/--seed:([^;]*)/)?.[1],
+              oldBorderRadius = oldStyle?.match(/border-radius:([^;]*)/)?.[1];
 
             (mutation.oldValue === null ||
               convexity !== oldConvexity ||
