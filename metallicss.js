@@ -365,15 +365,12 @@ const serializer = new XMLSerializer(),
               seed = style.getPropertyValue("--seed"),
               borderRadius = style.borderRadius;
 
-            mutation.oldValue === null ||
-              (mutation.oldValue(
-                convexity !==
-                  mutation.oldValue.getPropertyValue("--convexity") ||
-                  metal !== mutation.oldValue.getPropertyValue("--metal") ||
-                  seed !== mutation.oldValue.getPropertyValue("--seed") ||
-                  borderRadius !== mutation.oldValue.borderRadius
-              ) &&
-                metallicss(elem));
+            (mutation.oldValue === null ||
+              convexity !== mutation.oldValue.getPropertyValue("--convexity") ||
+              metal !== mutation.oldValue.getPropertyValue("--metal") ||
+              seed !== mutation.oldValue.getPropertyValue("--seed") ||
+              borderRadius !== mutation.oldValue.borderRadius) &&
+              metallicss(elem);
           }
         })
       ),
