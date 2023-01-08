@@ -349,8 +349,11 @@ export const metallicss = (elem) => {
     });
   },
   traverse = () =>
-    Array.from(document.querySelectorAll(".metallicss")).forEach(metallicss);
+    Array.from(document.querySelectorAll(".metallicss")).forEach(
+      window.metallicss
+    );
 
+window.metallicss = metallicss;
 window.addEventListener("load", traverse);
 
 export default metallicss;
