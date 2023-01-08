@@ -354,6 +354,7 @@ export const metallicss = (elem) => {
     );
 
 window.metallicss = metallicss;
+window.metallicssTraverse = traverse;
 window.addEventListener("load", traverse);
 
 export default metallicss;
