@@ -156,7 +156,8 @@ const serializer = new XMLSerializer(),
           },
         }),
         tag("rect", { props: { ...dims, filter: "url(#perlin)" } }),
-      ];
+      ],
+      noise = 0.0075 + (x * y) / 11520000 / 4; // 0.01
     let tempImage,
       url,
       rx =
@@ -286,7 +287,7 @@ const serializer = new XMLSerializer(),
                     tag("feTurbulence", {
                       props: {
                         ...sRGB,
-                        baseFrequency: "0.005 0.01",
+                        baseFrequency: `${noise / 2} ${noise}`,
                         seed,
                         type: "fractalNoise",
                       },
@@ -393,5 +394,6 @@ const serializer = new XMLSerializer(),
       attributeOldValue: true,
     });
     dimensionsObserver.observe(elem);
+    metallicss(elem);
   })
 );
