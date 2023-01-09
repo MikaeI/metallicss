@@ -370,8 +370,7 @@ const serializer = new XMLSerializer(),
               oldSeed = oldStyle?.match(/--seed:([^;]*)/)?.[1],
               oldBorderRadius = oldStyle?.match(/border-radius:([^;]*)/)?.[1];
 
-            (mutation.oldValue === null ||
-              convexity !== oldConvexity ||
+            (convexity !== oldConvexity ||
               metal !== oldMetal ||
               seed !== oldSeed ||
               borderRadius !== oldBorderRadius) &&
