@@ -7,13 +7,22 @@ function tag(name, { inner, props }) {
   return elem;
 }
 
+function debounce(callback, delay = 250) {
+  let timeout;
+
+  return (...args) => {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => callback(...args), delay);
+  };
+}
+
 const serializer = new XMLSerializer(),
   xmlns = "http://www.w3.org/2000/svg",
   domUrl = window.URL || window.webkitURL || window,
   isFirefox = window.navigator.userAgent.indexOf("Firefox") > -1,
   dims = { height: 2048, width: 2048 },
   sRGB = { ["color-interpolation-filters"]: "sRGB" },
-  randomSeed = Math.floor(Math.random() * 100),
+  randomSeed = Math.floor(Math.random() * 100) + 1,
   gradients = [
     tag("radialGradient", {
       inner: [
@@ -331,13 +340,6 @@ const serializer = new XMLSerializer(),
       )
     );
     tempImage.src = url;
-    elem.style.boxShadow = inverse
-      ? ""
-      : "#00000030 1px 2px 2px, #00000020 2px 4px 4px";
-    elem.style.color = "white";
-    elem.style.overflow = "hidden";
-    elem.style.textRendering = "geometricPrecision";
-    elem.style.transform = "translateZ(0)";
     Object.assign(elem.querySelector(":scope > .metal").style, {
       height: "100%",
       left: "0",
@@ -350,50 +352,22 @@ const serializer = new XMLSerializer(),
   };
 
 ((fn) => {
-  if (document.readyState !== "loading") {
-    fn();
-  } else {
-    document.addEventListener("DOMContentLoaded", fn);
-  }
-})(() =>
+  if (document.readyState !== "loading") fn();
+  else document.addEventListener("DOMContentLoaded", fn);
+})(() => {
   Array.from(document.querySelectorAll(".metallicss")).forEach((elem) => {
-    const observer = new MutationObserver((mutations) =>
-        mutations.forEach((mutation) => {
-          if (mutation.attributeName === "style") {
-            const style = mutation.target.style,
-              convexity = style.getPropertyValue("--convexity"),
-              metal = style.getPropertyValue("--metal"),
-              seed = style.getPropertyValue("--seed"),
-              borderRadius = style.borderRadius,
-              backgroundColor = style.backgroundColor,
-              oldStyle = mutation.oldValue,
-              oldConvexity = oldStyle?.match(/--convexity:([^;]*)/)?.[1],
-              oldMetal = oldStyle?.match(/--metal:([^;]*)/)?.[1],
-              oldSeed = oldStyle?.match(/--seed:([^;]*)/)?.[1],
-              oldBorderRadius = oldStyle?.match(/border-radius:([^;]*)/)?.[1],
-              oldBackgroundColor = oldStyle?.match(
-                /background-color:([^;]*)/
-              )?.[1];
+    elem.style.boxShadow = "#00000030 1px 2px 2px, #00000020 2px 4px 4px";
+    elem.style.color = "white";
+    elem.style.overflow = "hidden";
+    elem.style.textRendering = "geometricPrecision";
+    elem.style.transform = "translateZ(0)";
 
-            (convexity !== oldConvexity ||
-              metal !== oldMetal ||
-              seed !== oldSeed ||
-              borderRadius !== oldBorderRadius ||
-              backgroundColor !== oldBackgroundColor) &&
-              metallicss(elem);
-          }
-        })
-      ),
-      dimensionsObserver = new ResizeObserver((entries) =>
-        entries.forEach(() => metallicss(elem))
-      );
+    const debounced = debounce(metallicss),
+      observer = new MutationObserver(() => debounced(elem)),
+      dimensionsObserver = new ResizeObserver(() => debounced(elem));
 
-    observer.observe(elem, {
-      attributes: true,
-      attributeFilter: ["style"],
-      attributeOldValue: true,
-    });
+    observer.observe(elem, { attributes: true, attributeFilter: ["style"] });
     dimensionsObserver.observe(elem);
-    metallicss(elem);
-  })
-);
+    debounced(elem);
+  });
+});
