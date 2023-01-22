@@ -22,7 +22,7 @@ const serializer = new XMLSerializer(),
   isFirefox = window.navigator.userAgent.indexOf("Firefox") > -1,
   dims = { height: 2048, width: 2048 },
   sRGB = { ["color-interpolation-filters"]: "sRGB" },
-  map = await tag("feImage", {
+  map = tag("feImage", {
     props: {
       ...dims,
       ...sRGB,
