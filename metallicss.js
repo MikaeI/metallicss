@@ -30,8 +30,8 @@ const serializer = new XMLSerializer(),
       preserveAspectRatio: "none",
       result: "map",
     },
-  }),
-  metallicss = (elem) => {
+  });
+export const metallicss = (elem) => {
     const { offsetHeight: y, offsetWidth: x } = elem,
       { backgroundColor: background, borderRadius } = getComputedStyle(elem),
       depth = getComputedStyle(elem).getPropertyValue("--convexity"),
