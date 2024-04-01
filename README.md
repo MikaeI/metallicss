@@ -6,7 +6,7 @@
 
 MetalliCSS is a tiny, dependency-free JavaScript library that makes your CSS shine.
 
-Using the library is as simple as adding the class metallicss to an element, and using CSS properties for configuration.
+Using the library is as simple as adding the class metallicss to an element, and using CSS properties for configuration. The effect will auto-adapt to the elements size, border-radius and background color.
 
 **✨ [Interactive demo](https://www.metallicss.com)**
 
