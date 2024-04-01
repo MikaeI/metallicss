@@ -4,9 +4,9 @@
   <img src="https://metallicss.com/some.png?v=5" alt="MetalliCSS logo" width="240" />
 </p>
 
-MetalliCSS is a tiny, dependency-free JavaScript library that makes your CSS literally shine.
+MetalliCSS is a tiny, dependency-free JavaScript library that makes your CSS shine.
 
-Using the library is as simple as adding the class `metallicss`, and using CSS properties for configuration (try it out [here](https://www.metallicss.com)).
+Using the library is as simple as adding the class metallicss to an element, and using CSS properties for configuration.
 
 **✨ [Interactive demo](https://www.metallicss.com)**
 
