@@ -1,7 +1,7 @@
 # Adaptable metallic finish for CSS
 
 <p align="center">
-  <img src="https://metallicss.com/some2.png?v=5" alt="MetalliCSS logo" width="240" />
+  <img src="https://metallicss.com/some2.png?v=5" alt="MetalliCSS logo" width="512" />
 </p>
 
 MetalliCSS is a tiny, dependency-free JavaScript library that makes your CSS shine.
