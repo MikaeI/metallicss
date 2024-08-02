@@ -1,4 +1,4 @@
-# Adaptable metallic finish for CSS
+# Adaptive metallic finish for CSS
 
 <p align="center">
   <img src="https://metallicss.com/some2.png?v=5" alt="MetalliCSS logo" width="512" />
