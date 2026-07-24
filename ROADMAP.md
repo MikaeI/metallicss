@@ -33,7 +33,8 @@ is not stable until it ships in a tagged npm release:
   tests, Node/SSR tests, and Playwright coverage for Chromium, Firefox, and
   WebKit.
 - Build a repository-owned material lab with local serving, accessibility
-  checks, and a GitHub Pages deployment workflow.
+  checks, and a GitHub Pages deployment workflow, now live at
+  [mikaei.github.io/metallicss](https://mikaei.github.io/metallicss/).
 - Establish contribution, conduct, governance, support, security, ownership,
   issue, pull-request, roadmap, release, and sponsorship documentation.
 
@@ -41,8 +42,6 @@ Release gates still open:
 
 - Create a matching `v5.0.0` tag and GitHub release, then publish the reviewed
   package to npm with provenance.
-- Enable GitHub Pages with GitHub Actions as its source and verify the public
-  demo from a clean deployment.
 - Complete the supported browser matrix and record any degraded modes.
 - Publish repeatable render benchmarks and a reviewed performance baseline.
 - Validate the versioned commit, generated artifacts, changelog, Git tag, and

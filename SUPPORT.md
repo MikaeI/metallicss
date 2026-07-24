@@ -9,7 +9,8 @@ service or response time.
    browser expectations.
 2. Reproduce the behavior in a minimal HTML page or the repository demo: run
    `npm ci`, then `node scripts/serve.mjs`, and open
-   <http://127.0.0.1:4173>. The public Pages deployment is not yet enabled.
+   <http://127.0.0.1:4173>, or use the
+   [live Material Lab](https://mikaei.github.io/metallicss/).
 3. Search existing issues for the error message, browser, and feature involved.
 
 ## Where to ask

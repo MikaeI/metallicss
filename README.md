@@ -15,8 +15,8 @@ npm ci
 npm run dev
 ```
 
-Then open <http://127.0.0.1:4173>. A public GitHub Pages URL will be added after
-Pages is enabled for the repository.
+Then open <http://127.0.0.1:4173>, or use the
+[live Material Lab](https://mikaei.github.io/metallicss/).
 
 > [!IMPORTANT]
 > The source tree on `main` is prepared as the 5.0.0 release candidate, but it

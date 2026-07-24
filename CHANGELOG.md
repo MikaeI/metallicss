@@ -37,8 +37,8 @@ package are published; npm `latest` is still 4.0.3.
 - ESM type declarations for the renderer, lifecycle APIs, options, controller,
   roots, and presets.
 - Repository-owned interactive demo source, local server, staging command, and
-  Pages deployment workflow. Public Pages availability remains pending
-  repository configuration.
+  Pages deployment workflow, published as the
+  [live Material Lab](https://mikaei.github.io/metallicss/).
 - Node, SSR, package-consumer, bundle-budget, and Playwright test coverage.
 - Contribution, governance, support, security, conduct, roadmap, issue, pull
   request, ownership, and sponsorship documentation.
