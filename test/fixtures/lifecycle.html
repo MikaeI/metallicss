@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>MetalliCSS browser fixture</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        padding: 2rem;
+        color: #101419;
+        background: #f4f7fa;
+        font-family: system-ui, sans-serif;
+      }
+
+      #auto-target {
+        width: 240px;
+        height: 120px;
+        display: grid;
+        place-items: center;
+        overflow: hidden;
+        color: #101419;
+        background: #cf7546;
+        border-radius: 24px;
+        --metal: copper;
+        --convexity: 5;
+        --metallicss-resolution: 1;
+      }
+
+      #lifecycle-host {
+        min-height: 160px;
+        margin-top: 2rem;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Browser fixture</h1>
+      <div class="metallicss" id="auto-target"><strong>Preserved content</strong></div>
+      <div id="lifecycle-host"></div>
+    </main>
+    <script type="module">
+      import * as metallicssApi from "../../metallicss.js";
+
+      window.metallicssApi = metallicssApi;
+      window.fixtureModuleReady = true;
+    </script>
+  </body>
+</html>

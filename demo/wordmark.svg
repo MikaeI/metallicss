@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 96">
+  <title>MetalliCSS</title>
+  <defs>
+    <linearGradient id="ingot" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ffffff" />
+      <stop offset="0.24" stop-color="#828d97" />
+      <stop offset="0.46" stop-color="#f5f8fa" />
+      <stop offset="0.7" stop-color="#5e6872" />
+      <stop offset="1" stop-color="#cbd3d9" />
+    </linearGradient>
+    <linearGradient id="letters" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff" />
+      <stop offset="0.44" stop-color="#c5cdd4" />
+      <stop offset="0.5" stop-color="#727d87" />
+      <stop offset="0.58" stop-color="#edf1f4" />
+      <stop offset="1" stop-color="#a0aab3" />
+    </linearGradient>
+  </defs>
+  <g transform="translate(4 8)">
+    <rect width="80" height="80" rx="24" fill="#11161c" />
+    <rect x="1" y="1" width="78" height="78" rx="23" fill="none" stroke="#303842" />
+    <path
+      d="M18 58V25h10l12 18 12-18h10v33H51V42L40 58 29 42v16H18Z"
+      fill="url(#ingot)"
+    />
+    <path d="M17 20h46" stroke="#ffffff" stroke-opacity=".35" stroke-linecap="round" />
+  </g>
+  <text
+    x="108"
+    y="65"
+    fill="#f3f6f8"
+    font-family="ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif"
+    font-size="54"
+    font-weight="680"
+    letter-spacing="-2.8"
+  >Metalli<tspan fill="url(#letters)" font-weight="800">CSS</tspan></text>
+</svg>

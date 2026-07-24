@@ -1,0 +1,514 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="MetalliCSS adds adaptive, configurable metallic finishes to ordinary HTML containers with zero runtime dependencies."
+    />
+    <meta name="theme-color" content="#080a0d" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="MetalliCSS — Metal that behaves like CSS" />
+    <meta
+      property="og:description"
+      content="A dependency-free, open-source renderer for adaptive metallic finishes on the web."
+    />
+    <title>MetalliCSS — Metal that behaves like CSS</title>
+    <link rel="icon" href="./demo/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="./demo/styles.css" />
+    <script type="module" src="./demo/main.js"></script>
+    <noscript>
+      <style>
+        #renderer-status {
+          display: none;
+        }
+      </style>
+    </noscript>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to main content</a>
+
+    <header class="site-header">
+      <div class="shell header-inner">
+        <a class="brand" href="#top" aria-label="MetalliCSS home">
+          <img src="./demo/wordmark.svg" width="232" height="40" alt="MetalliCSS" />
+        </a>
+        <nav class="site-nav" aria-label="Primary navigation">
+          <a href="#examples">Examples</a>
+          <a href="#how-it-works">How it works</a>
+          <a href="#install">Install</a>
+          <a class="nav-github" href="https://github.com/MikaeI/metallicss">
+            GitHub
+            <span aria-hidden="true">↗</span>
+          </a>
+        </nav>
+      </div>
+    </header>
+
+    <main id="main" tabindex="-1">
+      <section class="hero shell" id="top" aria-labelledby="hero-title">
+        <div class="hero-copy">
+          <p class="eyebrow"><span class="status-dot"></span> Open source · MIT</p>
+          <h1 id="hero-title">Metal that behaves like CSS.</h1>
+          <p class="hero-lede">
+            Add an adaptive metallic finish to ordinary container elements. MetalliCSS reads each
+            box, its fallback color, and custom properties, then redraws when that element changes
+            size or style.
+          </p>
+          <div class="hero-actions">
+            <a class="button button-primary" href="#lab-controls">Try the lab</a>
+            <a class="button button-secondary" href="https://github.com/MikaeI/metallicss">
+              Read the source <span aria-hidden="true">↗</span>
+            </a>
+          </div>
+          <dl class="project-facts" aria-label="Project facts">
+            <div>
+              <dt>Runtime dependencies</dt>
+              <dd>0</dd>
+            </div>
+            <div>
+              <dt>Interface</dt>
+              <dd>CSS custom properties</dd>
+            </div>
+            <div>
+              <dt>License</dt>
+              <dd>MIT</dd>
+            </div>
+          </dl>
+        </div>
+
+        <div class="lab" aria-labelledby="lab-title">
+          <div class="lab-toolbar">
+            <div>
+              <p class="lab-kicker">Live material lab</p>
+              <h2 id="lab-title">Shape the reflection</h2>
+            </div>
+            <p class="renderer-status" id="renderer-status" aria-live="polite">
+              <span class="status-dot"></span>
+              <span>Loading renderer…</span>
+            </p>
+            <noscript>
+              <p class="renderer-status is-error">
+                <span class="status-dot"></span>
+                <span>CSS fallback · JavaScript unavailable</span>
+              </p>
+            </noscript>
+          </div>
+
+          <div class="preview-well">
+            <div
+              class="metallicss metal-preview"
+              id="metal-preview"
+              data-metal-target
+              style="
+                --metal: silver;
+                --convexity: 5;
+                --metallicss-angle: 315deg;
+                --metallicss-intensity: 1;
+                --metallicss-resolution: 1;
+                --demo-color: #f4f7fa;
+                --demo-size: 500px;
+                --demo-highlight-opacity: 0.2;
+                color: #090b0d;
+                background-color: #f4f7fa;
+                border-radius: 72px;
+              "
+            >
+              <div class="preview-content">
+                <span class="preview-overline">Adaptive surface</span>
+                <strong>MetalliCSS</strong>
+                <span>Resize it. Restyle it. It follows.</span>
+              </div>
+            </div>
+          </div>
+
+          <form id="lab-controls" class="controls" autocomplete="off">
+            <fieldset>
+              <legend>Material</legend>
+              <div class="control control-select">
+                <label for="control-metal">Finish</label>
+                <select id="control-metal" name="metal">
+                  <option value="silver">Silver</option>
+                  <option value="steel">Steel</option>
+                  <option value="chrome">Chrome</option>
+                  <option value="gold">Gold</option>
+                  <option value="copper">Copper</option>
+                  <option value="lead">Lead</option>
+                  <option value="titanium">Titanium</option>
+                  <option value="gunmetal">Gunmetal</option>
+                  <option value="custom">Custom color</option>
+                </select>
+              </div>
+              <div class="control control-color">
+                <label for="control-color">Custom color</label>
+                <div class="color-control">
+                  <output id="value-color" for="control-color">#f4f7fa</output>
+                  <input id="control-color" name="color" type="color" value="#f4f7fa" />
+                </div>
+              </div>
+            </fieldset>
+
+            <fieldset>
+              <legend>Geometry</legend>
+              <div class="control">
+                <div class="control-label">
+                  <label for="control-convexity">Convexity</label>
+                  <output id="value-convexity" for="control-convexity">5</output>
+                </div>
+                <input
+                  id="control-convexity"
+                  name="convexity"
+                  type="range"
+                  min="-12"
+                  max="12"
+                  step="1"
+                  value="5"
+                />
+              </div>
+              <div class="control">
+                <div class="control-label">
+                  <label for="control-radius">Corner radius</label>
+                  <output id="value-radius" for="control-radius">72px</output>
+                </div>
+                <input
+                  id="control-radius"
+                  name="radius"
+                  type="range"
+                  min="0"
+                  max="160"
+                  step="1"
+                  value="72"
+                />
+              </div>
+              <div class="control">
+                <div class="control-label">
+                  <label for="control-size">Max width</label>
+                  <output id="value-size" for="control-size">500px max</output>
+                </div>
+                <input
+                  id="control-size"
+                  name="size"
+                  type="range"
+                  min="160"
+                  max="560"
+                  step="8"
+                  value="500"
+                />
+              </div>
+            </fieldset>
+
+            <fieldset>
+              <legend>Light</legend>
+              <div class="control">
+                <div class="control-label">
+                  <label for="control-angle">Angle</label>
+                  <output id="value-angle" for="control-angle">315°</output>
+                </div>
+                <input
+                  id="control-angle"
+                  name="angle"
+                  type="range"
+                  min="0"
+                  max="360"
+                  step="1"
+                  value="315"
+                />
+              </div>
+              <div class="control">
+                <div class="control-label">
+                  <label for="control-intensity">Intensity</label>
+                  <output id="value-intensity" for="control-intensity">1.00</output>
+                </div>
+                <input
+                  id="control-intensity"
+                  name="intensity"
+                  type="range"
+                  min="0.25"
+                  max="2"
+                  step="0.05"
+                  value="1"
+                />
+              </div>
+              <div class="control">
+                <div class="control-label">
+                  <label for="control-resolution">Resolution</label>
+                  <output id="value-resolution" for="control-resolution">1.00×</output>
+                </div>
+                <input
+                  id="control-resolution"
+                  name="resolution"
+                  type="range"
+                  min="0.5"
+                  max="2"
+                  step="0.25"
+                  value="1"
+                />
+              </div>
+            </fieldset>
+
+            <div class="control-actions">
+              <button class="button button-secondary" id="reset-demo" type="button">Reset</button>
+              <button class="button button-secondary" id="copy-link" type="button">
+                Copy share link
+              </button>
+            </div>
+          </form>
+
+          <div class="snippet-card">
+            <div class="snippet-header">
+              <span>Copy this surface</span>
+              <button class="text-button" id="copy-code" type="button">Copy code</button>
+            </div>
+            <pre tabindex="0"><code id="code-output"></code></pre>
+          </div>
+          <p class="copy-status" id="copy-status" aria-live="polite"></p>
+        </div>
+      </section>
+
+      <section class="section shell" id="examples" aria-labelledby="examples-title">
+        <div class="section-heading">
+          <p class="eyebrow">Ordinary markup, uncommon finish</p>
+          <h2 id="examples-title">Not just another shiny button.</h2>
+          <p>
+            MetalliCSS follows the box it is given, from tight controls to full interface panels.
+            The examples below are live elements rendered by the same local module as the
+            playground.
+          </p>
+        </div>
+
+        <div class="examples-grid">
+          <article class="example example-action">
+            <div class="example-stage">
+              <div class="example-button-wrap">
+                <span
+                  class="metallicss metal-action"
+                  style="--metal: silver; --convexity: 6; border-radius: 999px"
+                >
+                  Ready to ship
+                </span>
+              </div>
+            </div>
+            <div class="example-caption">
+              <h3>Badge</h3>
+              <code>--convexity: 6</code>
+            </div>
+          </article>
+
+          <article class="example example-switch">
+            <div class="example-stage">
+              <label class="demo-switch">
+                <input type="checkbox" checked />
+                <span
+                  class="metallicss switch-track"
+                  aria-hidden="true"
+                  style="--metal: lead; --convexity: -3; border-radius: 999px"
+                >
+                  <span class="switch-knob"></span>
+                </span>
+                <span>Reflective UI</span>
+              </label>
+            </div>
+            <div class="example-caption">
+              <h3>Switch</h3>
+              <code>--convexity: -3</code>
+            </div>
+          </article>
+
+          <article class="example example-card">
+            <div class="example-stage">
+              <div
+                class="metallicss metal-card"
+                style="
+                  --metal: neutral;
+                  --convexity: 3;
+                  background-color: #d8c09b;
+                  border-radius: 28px;
+                "
+              >
+                <span class="card-index">01</span>
+                <strong>Brass interface</strong>
+                <small>Responsive by construction</small>
+              </div>
+            </div>
+            <div class="example-caption">
+              <h3>Panel</h3>
+              <code>--metal: neutral</code>
+            </div>
+          </article>
+
+          <article class="example example-loader">
+            <div class="example-stage">
+              <div class="spinner-orbit" role="img" aria-label="Animated metallic loader example">
+                <div
+                  class="metallicss spinner-core"
+                  style="--metal: copper; --convexity: 8; border-radius: 50%"
+                ></div>
+              </div>
+            </div>
+            <div class="example-caption">
+              <h3>Motion</h3>
+              <code>prefers-reduced-motion</code>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section
+        class="section technical-section"
+        id="how-it-works"
+        aria-labelledby="technical-title"
+      >
+        <div class="shell">
+          <div class="section-heading section-heading-wide">
+            <p class="eyebrow">The honest version</p>
+            <h2 id="technical-title">A rendering layer, not a design system.</h2>
+            <p>
+              You keep control of the element and its content. MetalliCSS is responsible for one
+              thing: turning its geometry and CSS variables into a responsive reflection.
+            </p>
+          </div>
+
+          <ol class="pipeline">
+            <li>
+              <span class="pipeline-number">01</span>
+              <h3>Read</h3>
+              <p>
+                The renderer reads computed dimensions, color, corner radius, and the MetalliCSS
+                custom properties.
+              </p>
+            </li>
+            <li>
+              <span class="pipeline-number">02</span>
+              <h3>Shape</h3>
+              <p>
+                A reflection and displacement field are composed for that exact box—convex, flat, or
+                inset.
+              </p>
+            </li>
+            <li>
+              <span class="pipeline-number">03</span>
+              <h3>Paint</h3>
+              <p>
+                The result is painted behind your content. Managed elements refresh after their
+                class, inline style, or dimensions change.
+              </p>
+            </li>
+          </ol>
+
+          <div class="technical-grid">
+            <article>
+              <span class="technical-label">Today</span>
+              <h3>Canvas renderer</h3>
+              <p>
+                Modern-browser progressive enhancement, no remote image request, and no runtime
+                package dependencies.
+              </p>
+            </article>
+            <article>
+              <span class="technical-label">In progress</span>
+              <h3>Expanded controls</h3>
+              <p>
+                Namespaced color, light, intensity, and resolution inputs with documented ranges and
+                predictable fallbacks.
+              </p>
+            </article>
+            <article>
+              <span class="technical-label">Explore</span>
+              <h3>Houdini paint</h3>
+              <p>
+                Research whether a Paint Worklet can improve measured performance while preserving
+                the Canvas renderer as a reliable fallback.
+              </p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section shell" id="install" aria-labelledby="install-title">
+        <div class="section-heading section-heading-wide">
+          <p class="eyebrow">Start with one element</p>
+          <h2 id="install-title">Small API. Plain HTML.</h2>
+          <p>
+            Install the module, add the class, then tune the material in the same stylesheet as the
+            rest of your interface.
+          </p>
+        </div>
+
+        <div class="install-grid">
+          <article class="install-card">
+            <div class="install-card-header">
+              <span>1 · Install</span>
+              <code>terminal</code>
+            </div>
+            <pre><code>npm install metallicss</code></pre>
+          </article>
+          <article class="install-card" id="api">
+            <div class="install-card-header">
+              <span>2 · Render</span>
+              <code>app.js</code>
+            </div>
+            <pre><code>import { metallicss } from "metallicss";
+
+metallicss(document.querySelector(".metallicss"));</code></pre>
+          </article>
+          <article class="install-card install-card-wide">
+            <div class="install-card-header">
+              <span>3 · Style</span>
+              <code>styles.css</code>
+            </div>
+            <pre><code>.metallicss {
+  --metal: silver;
+  --convexity: 5;
+  border-radius: 2rem;
+}</code></pre>
+          </article>
+        </div>
+
+        <div class="project-links" aria-label="Project documentation">
+          <a href="https://github.com/MikaeI/metallicss#readme">
+            <span>API reference</span>
+            <strong>Read the complete usage guide <span aria-hidden="true">↗</span></strong>
+          </a>
+          <a href="https://github.com/MikaeI/metallicss/blob/main/ROADMAP.md">
+            <span>Roadmap</span>
+            <strong>See what is being built <span aria-hidden="true">↗</span></strong>
+          </a>
+          <a href="https://github.com/MikaeI/metallicss/blob/main/CONTRIBUTING.md">
+            <span>Contributing</span>
+            <strong>Help shape the next release <span aria-hidden="true">↗</span></strong>
+          </a>
+          <a href="https://github.com/sponsors/MikaeI">
+            <span>Sponsor</span>
+            <strong>Fund open-source polish <span aria-hidden="true">↗</span></strong>
+          </a>
+        </div>
+      </section>
+
+      <section class="closing-section">
+        <div class="shell closing-inner">
+          <div>
+            <p class="eyebrow">Built in the open</p>
+            <h2>Make the web a little less flat.</h2>
+          </div>
+          <div class="closing-actions">
+            <a class="button button-primary" href="#lab-controls">Open the material lab</a>
+            <a class="button button-secondary" href="https://github.com/MikaeI/metallicss"
+              >Star on GitHub <span aria-hidden="true">↗</span></a
+            >
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="shell footer-inner">
+        <img src="./demo/wordmark.svg" width="174" height="30" alt="MetalliCSS" loading="lazy" />
+        <p>Adaptive metallic finishes for the web. Open source under the MIT License.</p>
+        <a href="https://github.com/MikaeI/metallicss"
+          >Source on GitHub <span aria-hidden="true">↗</span></a
+        >
+      </div>
+    </footer>
+  </body>
+</html>

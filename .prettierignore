@@ -1,8 +1,6 @@
-.DS_Store
-.dist-check-*
-_site/
-blob-report/
 coverage/
+dist/
 node_modules/
+package-lock.json
 playwright-report/
 test-results/

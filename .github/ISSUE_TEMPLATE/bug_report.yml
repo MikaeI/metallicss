@@ -1,0 +1,83 @@
+name: Bug report
+description: Report a reproducible problem in the renderer, package, or demo.
+title: "[Bug]: "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping improve MetalliCSS. For usage questions, use the support link below. Do not report security vulnerabilities here; follow SECURITY.md instead.
+
+  - type: dropdown
+    id: version
+    attributes:
+      label: Affected version
+      description: Which version or branch reproduces the problem?
+      options:
+        - main / 5.0.0 candidate
+        - 4.0.3 (latest npm)
+        - Earlier npm release
+        - Not sure
+    validations:
+      required: true
+
+  - type: input
+    id: environment
+    attributes:
+      label: Browser and operating system
+      description: Include exact browser and OS versions when possible.
+      placeholder: Firefox 140 on Ubuntu 24.04
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened?
+      description: Describe the problem and its user impact.
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Minimal reproduction
+      description: Link to a small reproduction or provide the smallest HTML, CSS, and JavaScript needed to reproduce it.
+      placeholder: Include steps that start from a clean page and end at the failure.
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+    validations:
+      required: true
+
+  - type: textarea
+    id: diagnostics
+    attributes:
+      label: Console output or screenshots
+      description: Paste relevant errors, performance traces, screenshots, or recordings. Remove sensitive data first.
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Submission checklist
+      options:
+        - label: I searched existing issues and pull requests for this problem.
+          required: true
+        - label: I reduced the problem to a minimal reproduction.
+          required: true
+        - label: I have not included passwords, tokens, private data, or vulnerability details.
+          required: true
+        - label: I agree to follow the Code of Conduct.
+          required: true

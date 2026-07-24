@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Usage and support questions
+    url: https://github.com/MikaeI/metallicss/blob/main/SUPPORT.md
+    about: Get help with integration, browser behavior, and troubleshooting.
+  - name: Report a security vulnerability
+    url: https://github.com/MikaeI/metallicss/security/advisories/new
+    about: Send suspected vulnerabilities privately. Do not open a public issue.

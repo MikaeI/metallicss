@@ -1,0 +1,83 @@
+name: Feature request
+description: Propose a focused improvement to MetalliCSS.
+title: "[Feature]: "
+labels:
+  - enhancement
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Strong proposals begin with a concrete user problem. Please review ROADMAP.md and the project non-goals before suggesting a large API, rendering backend, or dependency.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem to solve
+      description: Who experiences this problem, and what can they not do today?
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: Describe the smallest public behavior that would solve the problem.
+    validations:
+      required: true
+
+  - type: textarea
+    id: example
+    attributes:
+      label: Example API or usage
+      description: Show how the proposal would look to a user, when applicable.
+      render: javascript
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Include workarounds and explain why they are insufficient.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: roadmap
+    attributes:
+      label: Roadmap relationship
+      options:
+        - Existing roadmap item
+        - Adjacent to an existing roadmap item
+        - New direction
+        - Not sure
+    validations:
+      required: true
+
+  - type: textarea
+    id: tradeoffs
+    attributes:
+      label: Compatibility, performance, and accessibility
+      description: Note expected bundle-size, runtime, browser-support, security, or accessibility implications.
+
+  - type: dropdown
+    id: contribution
+    attributes:
+      label: Contribution interest
+      options:
+        - I can prepare a pull request
+        - I can help test or benchmark it
+        - I can provide design feedback
+        - I am only proposing the idea
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Submission checklist
+      options:
+        - label: I searched existing issues and pull requests for similar proposals.
+          required: true
+        - label: I reviewed ROADMAP.md and the project non-goals.
+          required: true
+        - label: I agree to follow the Code of Conduct.
+          required: true

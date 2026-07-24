@@ -1,23 +1,85 @@
 {
   "name": "metallicss",
-  "version": "4.0.3",
-  "description": "Versatile metallic finish for CSS",
-  "main": "metallicss.js",
-  "directories": {
-    "test": "test"
+  "version": "5.0.0",
+  "description": "Adaptive, dependency-free metallic finishes for the web",
+  "type": "module",
+  "main": "./dist/metallicss.min.js",
+  "module": "./metallicss.js",
+  "types": "./metallicss.d.ts",
+  "browser": "./dist/metallicss.min.js",
+  "exports": {
+    ".": {
+      "types": "./metallicss.d.ts",
+      "import": "./metallicss.js",
+      "default": "./metallicss.js"
+    },
+    "./dist/metallicss.min.js": "./dist/metallicss.min.js",
+    "./package.json": "./package.json"
   },
+  "files": [
+    "dist",
+    "metallicss.js",
+    "metallicss.d.ts"
+  ],
+  "sideEffects": [
+    "./metallicss.js",
+    "./dist/metallicss.min.js"
+  ],
+  "unpkg": "./dist/metallicss.min.js",
+  "jsdelivr": "./dist/metallicss.min.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "node scripts/build.mjs",
+    "build:check": "node scripts/check-dist.mjs",
+    "check:bundle": "node scripts/check-bundle-size.mjs",
+    "dev": "node scripts/serve.mjs",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "npm run test:node && npm run test:browser",
+    "test:node": "node --test test/unit/api.test.js test/unit/manifest.test.js test/unit/server.test.js test/ssr/import.test.js test/package/package.test.js",
+    "test:unit": "node --test test/unit/api.test.js test/unit/manifest.test.js test/unit/server.test.js",
+    "test:ssr": "node --test test/ssr/import.test.js",
+    "test:package": "node --test test/package/package.test.js",
+    "test:browser": "playwright test",
+    "test:browser:update": "playwright test --update-snapshots",
+    "pages:stage": "node scripts/stage-pages.mjs",
+    "prepack": "npm run build && npm run check:bundle"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/MikaeI/metallicss.git"
   },
-  "keywords": [],
+  "funding": "https://github.com/sponsors/MikaeI",
+  "keywords": [
+    "canvas",
+    "css",
+    "design-system",
+    "metal",
+    "metallic",
+    "svg",
+    "ui"
+  ],
   "author": "MikaeI",
-  "license": "SEE LICENSE IN LICENSE",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/MikaeI/metallicss/issues"
   },
-  "homepage": "https://github.com/MikaeI/metallicss#readme"
+  "homepage": "https://mikaei.github.io/metallicss/",
+  "engines": {
+    "node": ">=22"
+  },
+  "browserslist": [
+    "defaults and supports es6-module",
+    "not dead"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.61.1",
+    "esbuild": "^0.28.1",
+    "eslint": "^10.7.0",
+    "prettier": "^3.9.6"
+  }
 }
